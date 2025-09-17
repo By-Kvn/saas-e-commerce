@@ -22,9 +22,9 @@
     "docker:down": "docker-compose down"
   },
   "devDependencies": {
+    "@types/node": "^20.19.16",
     "turbo": "^1.13.4",
-    "@types/node": "^20.14.10",
-    "typescript": "^5.5.3"
+    "typescript": "^5.9.2"
   },
   "packageManager": "npm@10.0.0",
   "engines": {

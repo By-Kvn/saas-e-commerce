@@ -1,5 +1,5 @@
 import { FastifyInstance } from 'fastify'
-import { ApiResponse } from '@/types'
+import { ApiResponse } from '@saas/types'
 
 export async function helloRoutes(fastify: FastifyInstance) {
   fastify.get<{
