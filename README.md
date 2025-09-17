@@ -220,6 +220,87 @@ docker-compose -f docker-compose.prod.yml up
 - **Next.js 15**: Latest React features with App Router
 - **Shared packages**: Consistent types and UI across apps
 
+## 🔐 Système d'authentification complet
+
+### Fonctionnalités implémentées
+
+✅ **Inscription avec email et mot de passe**
+- Validation côté client et serveur
+- Hash sécurisé des mots de passe (bcrypt)
+- Envoi automatique d'email de vérification
+
+✅ **Connexion/déconnexion sécurisée**
+- JWT tokens avec expiration
+- Gestion d'état centralisée avec React Context
+- Protection automatique des routes
+
+✅ **Vérification d'email avec lien de confirmation**
+- Tokens temporaires sécurisés
+- Interface de vérification intuitive
+- Possibilité de renvoyer l'email
+
+✅ **Récupération de mot de passe**
+- Processus "Mot de passe oublié" complet
+- Liens de réinitialisation temporaires (1h)
+- Interface de définition de nouveau mot de passe
+
+✅ **Protection des routes (middleware d'authentification)**
+- Composant `ProtectedRoute` réutilisable
+- Redirection automatique selon le statut
+- Vérification optionnelle de l'email
+
+✅ **Gestion de sessions avec JWT**
+- Tokens stockés de manière sécurisée
+- Middleware serveur pour la validation
+- Déconnexion automatique à l'expiration
+
+✅ **Page profil utilisateur avec modification**
+- Modification nom et email
+- Changement de mot de passe sécurisé
+- Statut de vérification d'email
+
+### Pages d'authentification disponibles
+
+- `/login` - Connexion utilisateur
+- `/register` - Inscription utilisateur  
+- `/forgot-password` - Demande de réinitialisation
+- `/reset-password?token=...` - Réinitialisation de mot de passe
+- `/verify-email?token=...` - Vérification d'email
+- `/dashboard` - Tableau de bord (protégé)
+- `/profile` - Profil utilisateur (protégé)
+
+### Configuration email requise
+
+```env
+# Configuration SMTP
+SMTP_HOST="smtp.gmail.com"
+SMTP_PORT="587" 
+SMTP_SECURE="false"
+SMTP_USER="votre-email@gmail.com"
+SMTP_PASSWORD="votre-mot-de-passe-app"
+FROM_EMAIL="noreply@votreapp.com"
+
+# URL frontend (pour les liens dans les emails)
+FRONTEND_URL="http://localhost:3000"
+```
+
+### API d'authentification
+
+Le backend expose une API REST complète :
+
+```
+POST /api/auth/register         # Inscription
+POST /api/auth/login           # Connexion
+POST /api/auth/verify-email    # Vérification email
+POST /api/auth/resend-verification # Renvoyer email
+POST /api/auth/forgot-password # Mot de passe oublié
+POST /api/auth/reset-password  # Réinitialiser mot de passe
+GET  /api/auth/me             # Profil utilisateur (protégé)
+PUT  /api/auth/profile        # Modifier profil (protégé)
+POST /api/auth/change-password # Changer mot de passe (protégé)
+POST /api/auth/logout         # Déconnexion
+```
+
 ## 🤝 Contributing
 
 1. Fork the repository

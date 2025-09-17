@@ -1,12 +1,15 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import Link from 'next/link'
 import { Button } from '@saas/ui'
 import { ApiResponse } from '@saas/types'
+import { useAuth } from '../contexts/AuthContext'
 
 export default function HomePage() {
   const [message, setMessage] = useState<string>('')
   const [loading, setLoading] = useState<boolean>(false)
+  const { user, logout, isAuthenticated } = useAuth()
 
   const fetchHello = async () => {
     setLoading(true)
@@ -42,9 +45,38 @@ export default function HomePage() {
               <a href="#" className="text-gray-500 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">
                 Pricing
               </a>
-              <Button variant="primary" size="sm">
-                Sign In
-              </Button>
+              {isAuthenticated ? (
+                <div className="flex items-center space-x-2">
+                  <span className="text-gray-600 text-sm">
+                    Bonjour, {user?.name || user?.email}
+                  </span>
+                  <Link href="/dashboard">
+                    <Button variant="primary" size="sm">
+                      Dashboard
+                    </Button>
+                  </Link>
+                  <Button 
+                    onClick={logout} 
+                    variant="outline" 
+                    size="sm"
+                  >
+                    Déconnexion
+                  </Button>
+                </div>
+              ) : (
+                <div className="flex space-x-2">
+                  <Link href="/login">
+                    <Button variant="outline" size="sm">
+                      Se connecter
+                    </Button>
+                  </Link>
+                  <Link href="/register">
+                    <Button variant="primary" size="sm">
+                      S'inscrire
+                    </Button>
+                  </Link>
+                </div>
+              )}
             </nav>
           </div>
         </div>
