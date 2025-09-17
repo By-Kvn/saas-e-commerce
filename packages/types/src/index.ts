@@ -8,16 +8,11 @@ export interface ApiResponse {
 
 // User Types
 export interface User {
-  id: string;
-  email: string;
-  name?: string;
-  firstName?: string;
-  lastName?: string;
-  phone?: string;
-  avatar?: string;
-  role: UserRole;
-  createdAt: Date;
-  stripeCustomerId?: string;
+  id: string
+  email: string
+  name?: string
+  createdAt: Date
+  stripeCustomerId?: string
 }
 
 export interface CreateUserInput {
@@ -34,8 +29,49 @@ export interface LoginInput {
 }
 
 export interface AuthResponse {
-  user: Omit<User, "createdAt"> & { createdAt?: Date };
-  token: string;
+  user: Omit<User, 'createdAt'> & { createdAt?: Date }
+  token: string
+  message?: string
+}
+
+// Auth-related types
+export interface RegisterInput extends CreateUserInput {}
+
+export interface EmailVerificationInput {
+  token: string
+}
+
+export interface ResendVerificationInput {
+  email: string
+}
+
+export interface ForgotPasswordInput {
+  email: string
+}
+
+export interface ResetPasswordInput {
+  token: string
+  password: string
+}
+
+export interface UpdateProfileInput {
+  name?: string
+  email?: string
+}
+
+export interface ChangePasswordInput {
+  currentPassword: string
+  newPassword: string
+}
+
+export interface AuthenticatedUser {
+  id: string
+  email: string
+  name?: string
+  role?: string
+  avatar?: string
+  emailVerified: boolean
+  twoFactorEnabled?: boolean
 }
 
 // Address Types

@@ -13,15 +13,32 @@ datasource db {
 model User {
   id        String   @id @default(cuid())
   email     String   @unique
-  password  String
+  password  String? // Optional for OAuth users
   name      String?
   firstName String?
   lastName  String?
   phone     String?
-  avatar    String?
+  avatar    String? // Profile picture URL
   role      UserRole @default(CUSTOMER)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  // Email verification
+  emailVerified      Boolean   @default(false)
+  emailVerifyToken   String?   @unique
+  emailVerifyExpires DateTime?
+
+  // Password reset
+  passwordResetToken   String?   @unique
+  passwordResetExpires DateTime?
+
+  // Two-Factor Authentication (2FA)
+  twoFactorEnabled Boolean  @default(false)
+  twoFactorSecret  String? // TOTP secret
+  backupCodes      String[] // Emergency backup codes
+
+  // OAuth providers
+  oauthAccounts OAuthAccount[]
 
   // Stripe customer ID
   stripeCustomerId String?
@@ -232,11 +249,34 @@ model Subscription {
   @@map("subscriptions")
 }
 
+model OAuthAccount {
+  id         String        @id @default(cuid())
+  userId     String
+  provider   OAuthProvider
+  providerId String
+  email      String?
+  name       String?
+  avatar     String?
+  createdAt  DateTime      @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerId])
+  @@map("oauth_accounts")
+}
+
 // Enums
 enum UserRole {
   CUSTOMER
   ADMIN
   MODERATOR
+}
+
+enum OAuthProvider {
+  GOOGLE
+  FACEBOOK
+  GITHUB
+  TWITTER
 }
 
 enum ProductStatus {

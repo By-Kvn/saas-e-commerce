@@ -1,11 +1,14 @@
 import fastify from 'fastify'
 import cors from '@fastify/cors'
 import jwt from '@fastify/jwt'
+import passport from 'passport'
 import { helloRoutes } from './routes/hello'
 import { authRoutes } from './routes/auth'
 import { userRoutes } from './routes/users'
 import { stripeRoutes } from './routes/stripe'
 import { prisma } from './lib/prisma'
+import { authPlugin } from './lib/auth'
+import { oauthService } from './lib/oauth'
 import 'dotenv/config'
 
 const server = fastify({
@@ -24,6 +27,9 @@ server.register(cors, {
 server.register(jwt, {
   secret: process.env.JWT_SECRET || 'your-super-secret-jwt-key',
 })
+
+// Register auth plugin
+server.register(authPlugin)
 
 // Health check
 server.get('/health', async () => {

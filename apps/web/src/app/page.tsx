@@ -1,7 +1,31 @@
-import React from 'react'
-// import { Button } from '@saas/ui'
+'use client'
+
+import { useState, useEffect } from 'react'
+import { Button } from '@saas/ui'
+import { ApiResponse } from '@saas/types'
 
 export default function HomePage() {
+  const [message, setMessage] = useState<string>('')
+  const [loading, setLoading] = useState<boolean>(false)
+
+  const fetchHello = async () => {
+    setLoading(true)
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}/api/hello`)
+      const data: ApiResponse = await response.json()
+      setMessage(data.message)
+    } catch (error) {
+      console.error('Error fetching hello:', error)
+      setMessage('Error connecting to API')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    fetchHello()
+  }, [])
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
@@ -18,9 +42,9 @@ export default function HomePage() {
               <a href="/products" className="text-gray-900 hover:text-gray-600">
                 Produits
               </a>
-              <a href="/cart" className="text-gray-900 hover:text-gray-600">
-                Panier
-              </a>
+              <Button variant="primary" size="sm">
+                Sign In
+              </Button>
             </nav>
           </div>
         </div>
