@@ -1,10 +1,8 @@
 import { FastifyInstance } from 'fastify'
 import bcrypt from 'bcryptjs'
-import passport from 'passport'
 import { prisma } from '../lib/prisma'
 import { emailService } from '../lib/email'
 import { authMiddleware, requireEmailVerification, AuthenticatedUser } from '../lib/auth'
-import { oauthService } from '../lib/oauth'
 import { twoFactorService } from '../lib/twoFactor'
 import { requireRole, requireAdmin, AuthenticatedUserWithRole } from '../lib/roles'
 
@@ -465,48 +463,90 @@ export async function authRoutes(fastify: FastifyInstance) {
   // OAuth Routes
   // Google OAuth
   fastify.get('/google', async (request, reply) => {
-    return passport.authenticate('google', { scope: ['profile', 'email'] })(request as any, reply as any)
+    try {
+      const authUrl = (fastify as any).oauthService.getGoogleAuthUrl()
+      return reply.redirect(authUrl)
+    } catch (error) {
+      console.error('Google OAuth error:', error)
+      const errorMessage = (error as Error).message
+      return reply.redirect(`${process.env.FRONTEND_URL}/login?error=oauth_not_configured&message=${encodeURIComponent(errorMessage)}`)
+    }
   })
 
-  fastify.get('/google/callback', async (request, reply) => {
-    return passport.authenticate('google', { failureRedirect: `${process.env.FRONTEND_URL}/login?error=oauth_failed` })(
-      request as any,
-      reply as any,
-      async (err: any, user: any) => {
-        if (err || !user) {
-          return reply.redirect(`${process.env.FRONTEND_URL}/login?error=oauth_failed`)
-        }
+  fastify.get<{
+    Querystring: { code?: string; state?: string; error?: string }
+  }>('/google/callback', async (request, reply) => {
+    const { code, error } = request.query
 
-        // Generate JWT token
-        const token = fastify.jwt.sign({ userId: user.id, email: user.email })
-        
-        // Redirect to frontend with token
-        return reply.redirect(`${process.env.FRONTEND_URL}/oauth-callback?token=${token}&provider=google`)
-      }
-    )
+    if (error || !code) {
+      return reply.redirect(`${process.env.FRONTEND_URL}/login?error=oauth_failed`)
+    }
+
+    try {
+      const userInfo = await (fastify as any).oauthService.handleGoogleCallback(code)
+      
+      const user = await (fastify as any).oauthService.handleOAuthCallback({
+        provider: 'google',
+        providerId: userInfo.id,
+        email: userInfo.email,
+        name: userInfo.name,
+        avatar: userInfo.avatar,
+      })
+
+      // Generate JWT token
+      const token = fastify.jwt.sign({ userId: user.id, email: user.email })
+      
+      // Redirect to frontend with token
+      return reply.redirect(`${process.env.FRONTEND_URL}/oauth-callback?token=${token}&provider=google`)
+    } catch (error) {
+      console.error('Google OAuth callback error:', error)
+      const errorMessage = (error as Error).message
+      return reply.redirect(`${process.env.FRONTEND_URL}/login?error=oauth_failed&message=${encodeURIComponent(errorMessage)}`)
+    }
   })
 
   // GitHub OAuth
   fastify.get('/github', async (request, reply) => {
-    return passport.authenticate('github', { scope: ['user:email'] })(request as any, reply as any)
+    try {
+      const authUrl = (fastify as any).oauthService.getGitHubAuthUrl()
+      return reply.redirect(authUrl)
+    } catch (error) {
+      console.error('GitHub OAuth error:', error)
+      const errorMessage = (error as Error).message
+      return reply.redirect(`${process.env.FRONTEND_URL}/login?error=oauth_not_configured&message=${encodeURIComponent(errorMessage)}`)
+    }
   })
 
-  fastify.get('/github/callback', async (request, reply) => {
-    return passport.authenticate('github', { failureRedirect: `${process.env.FRONTEND_URL}/login?error=oauth_failed` })(
-      request as any,
-      reply as any,
-      async (err: any, user: any) => {
-        if (err || !user) {
-          return reply.redirect(`${process.env.FRONTEND_URL}/login?error=oauth_failed`)
-        }
+  fastify.get<{
+    Querystring: { code?: string; state?: string; error?: string }
+  }>('/github/callback', async (request, reply) => {
+    const { code, error } = request.query
 
-        // Generate JWT token
-        const token = fastify.jwt.sign({ userId: user.id, email: user.email })
-        
-        // Redirect to frontend with token
-        return reply.redirect(`${process.env.FRONTEND_URL}/oauth-callback?token=${token}&provider=github`)
-      }
-    )
+    if (error || !code) {
+      return reply.redirect(`${process.env.FRONTEND_URL}/login?error=oauth_failed`)
+    }
+
+    try {
+      const userInfo = await (fastify as any).oauthService.handleGitHubCallback(code)
+      
+      const user = await (fastify as any).oauthService.handleOAuthCallback({
+        provider: 'github',
+        providerId: userInfo.id,
+        email: userInfo.email,
+        name: userInfo.name,
+        avatar: userInfo.avatar,
+      })
+
+      // Generate JWT token
+      const token = fastify.jwt.sign({ userId: user.id, email: user.email })
+      
+      // Redirect to frontend with token
+      return reply.redirect(`${process.env.FRONTEND_URL}/oauth-callback?token=${token}&provider=github`)
+    } catch (error) {
+      console.error('GitHub OAuth callback error:', error)
+      const errorMessage = (error as Error).message
+      return reply.redirect(`${process.env.FRONTEND_URL}/login?error=oauth_failed&message=${encodeURIComponent(errorMessage)}`)
+    }
   })
 
   // 2FA Routes

@@ -1,7 +1,7 @@
 'use client'
 
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useState, useEffect } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { useAuth } from '../../contexts/AuthContext'
 import { Button, Input } from '@saas/ui'
@@ -16,6 +16,21 @@ export default function LoginPage() {
 
   const { login } = useAuth()
   const router = useRouter()
+  const searchParams = useSearchParams()
+
+  // Check for OAuth errors in URL parameters
+  useEffect(() => {
+    const oauthError = searchParams.get('error')
+    const message = searchParams.get('message')
+    
+    if (oauthError) {
+      if (oauthError === 'oauth_not_configured') {
+        setError(message || 'OAuth n\'est pas configuré. Veuillez configurer les clés OAuth dans le fichier .env.')
+      } else if (oauthError === 'oauth_failed') {
+        setError(message || 'Échec de l\'authentification OAuth. Veuillez réessayer.')
+      }
+    }
+  }, [searchParams])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -52,6 +67,32 @@ export default function LoginPage() {
         </div>
         
         <div className="bg-white py-8 px-6 shadow-lg rounded-lg sm:px-8">
+          {/* OAuth Configuration Notice */}
+          {error && error.includes('OAuth not configured') && (
+            <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-md">
+              <div className="flex">
+                <div className="flex-shrink-0">
+                  <svg className="h-5 w-5 text-blue-400" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+                  </svg>
+                </div>
+                <div className="ml-3">
+                  <h3 className="text-sm font-medium text-blue-800">
+                    Configuration OAuth requise
+                  </h3>
+                  <div className="mt-2 text-sm text-blue-700">
+                    <p>Pour utiliser l'authentification OAuth :</p>
+                    <ol className="list-decimal list-inside mt-1">
+                      <li>Configurez vos clés OAuth dans apps/api/.env</li>
+                      <li>Consultez OAUTH_SETUP.md pour les instructions détaillées</li>
+                      <li>En attendant, vous pouvez utiliser l'inscription/connexion par email ci-dessous</li>
+                    </ol>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* OAuth Buttons */}
           <div className="space-y-3 mb-6">
             <button

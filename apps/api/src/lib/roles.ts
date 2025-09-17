@@ -39,17 +39,17 @@ export function requireAdmin() {
 }
 
 export function requirePremium() {
-  return requireRole([UserRole.PREMIUM, UserRole.ADMIN])
+  return requireRole([UserRole.MODERATOR, UserRole.ADMIN])
 }
 
 export function requireUser() {
-  return requireRole([UserRole.USER, UserRole.PREMIUM, UserRole.ADMIN])
+  return requireRole([UserRole.CUSTOMER, UserRole.MODERATOR, UserRole.ADMIN])
 }
 
 export function canAccessResource(userRole: UserRole, resourceRole: UserRole): boolean {
   const roleHierarchy = {
-    [UserRole.USER]: 0,
-    [UserRole.PREMIUM]: 1,
+    [UserRole.CUSTOMER]: 0,
+    [UserRole.MODERATOR]: 1,
     [UserRole.ADMIN]: 2,
   }
 
@@ -58,12 +58,12 @@ export function canAccessResource(userRole: UserRole, resourceRole: UserRole): b
 
 export function getRolePermissions(role: UserRole) {
   const permissions = {
-    [UserRole.USER]: [
+    [UserRole.CUSTOMER]: [
       'read:profile',
       'update:profile',
       'read:basic_content',
     ],
-    [UserRole.PREMIUM]: [
+    [UserRole.MODERATOR]: [
       'read:profile',
       'update:profile',
       'read:basic_content',

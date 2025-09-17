@@ -1,14 +1,13 @@
 import fastify from 'fastify'
 import cors from '@fastify/cors'
 import jwt from '@fastify/jwt'
-import passport from 'passport'
 import { helloRoutes } from './routes/hello'
 import { authRoutes } from './routes/auth'
 import { userRoutes } from './routes/users'
 import { stripeRoutes } from './routes/stripe'
 import { prisma } from './lib/prisma'
 import { authPlugin } from './lib/auth'
-import { oauthService } from './lib/oauth'
+import fastifyOAuthPlugin from './lib/fastifyOAuth'
 import 'dotenv/config'
 
 const server = fastify({
@@ -19,7 +18,7 @@ const server = fastify({
 
 // Register CORS
 server.register(cors, {
-  origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+  origin: process.env.FRONTEND_URL || 'http://localhost:3000',  // Back to 3000
   credentials: true,
 })
 
@@ -30,6 +29,9 @@ server.register(jwt, {
 
 // Register auth plugin
 server.register(authPlugin)
+
+// Register OAuth plugin
+server.register(fastifyOAuthPlugin)
 
 // Health check
 server.get('/health', async () => {
@@ -55,7 +57,7 @@ process.on('SIGINT', gracefulShutdown)
 
 const start = async () => {
   try {
-    const port = Number(process.env.PORT) || 3001
+    const port = Number(process.env.PORT) || 3001  // Back to 3001
     const host = process.env.HOST || '0.0.0.0'
     
     await server.listen({ port, host })

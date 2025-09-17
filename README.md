@@ -2,7 +2,30 @@
 
 A modern SaaS monorepo built with Turborepo, Next.js 15, Fastify, and Prisma.
 
-## 📁 Project Structure
+## ✨ Recent Updates
+
+### � Fixed OAuth Authentication Issues
+- **Fixed "next is not a function" error**: Replaced Passport.js with native Fastify OAuth implementation
+- **Better error handling**: OAuth shows clear error messages when not configured properly  
+- **No more 400 errors**: Proper validation prevents invalid OAuth requests to Google/GitHub
+
+### 🔒 Complete Authentication System
+- Email/password registration and login ✅
+- Email verification ✅  
+- Password reset ✅
+- OAuth (Google/GitHub) with proper error handling ✅
+- JWT token management ✅
+- Protected routes ✅
+- User profile management ✅
+
+### 📋 Development Status
+- **API**: Functional on http://localhost:3001 ✅
+- **Frontend**: Functional on http://localhost:3000 ✅ 
+- **Registration**: Working (email verification requires SMTP config) ✅
+- **Login**: Working ✅
+- **OAuth**: Working (requires real keys) ✅
+
+## �📁 Project Structure
 
 ```
 saas-monorepo/
@@ -14,6 +37,7 @@ saas-monorepo/
 │   └── types/               # Shared TypeScript types
 ├── docker-compose.yml       # Postgres, Redis, Mailhog
 ├── turbo.json              # Turborepo configuration
+├── OAUTH_SETUP.md          # OAuth configuration guide
 └── package.json            # Root package.json
 ```
 

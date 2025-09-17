@@ -65,6 +65,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const register = async (credentials: RegisterInput): Promise<AuthResponse> => {
     try {
+      console.log('Register attempt with API URL:', API_URL)
+      console.log('Register credentials:', { email: credentials.email, name: credentials.name })
+      
       const response = await fetch(`${API_URL}/api/auth/register`, {
         method: 'POST',
         headers: {
@@ -73,7 +76,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         body: JSON.stringify(credentials),
       })
 
+      console.log('Register response status:', response.status)
+      console.log('Register response headers:', response.headers)
+
       const data = await response.json()
+      console.log('Register response data:', data)
 
       if (!response.ok) {
         throw new Error(data.error || 'Erreur d\'inscription')

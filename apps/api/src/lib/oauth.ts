@@ -157,7 +157,7 @@ export class OAuthService {
       data: {
         provider: oauthData.provider,
         providerId: oauthData.providerId,
-        email: oauthData.email,
+        email: oauthData.email || user.email,
         name: oauthData.name,
         avatar: oauthData.avatar,
         accessToken: oauthData.accessToken,
