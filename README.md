@@ -258,21 +258,51 @@ docker-compose -f docker-compose.prod.yml up
 - Modification nom et email
 - Changement de mot de passe sécurisé
 - Statut de vérification d'email
+- Configuration 2FA
+- Gestion des rôles utilisateur
+
+### 🚀 Fonctionnalités bonus implémentées
+
+✅ **OAuth 2.0 (Google et GitHub)**
+- Connexion sociale sécurisée
+- Liaison automatique des comptes existants
+- Gestion des tokens d'accès
+- Interface moderne avec boutons OAuth
+
+✅ **Double authentification (2FA)**
+- Configuration avec QR code
+- Support TOTP (Google Authenticator, Authy, etc.)
+- Codes de secours d'urgence
+- Désactivation sécurisée
+
+✅ **Gestion des rôles (admin, user, premium)**
+- Système de rôles hiérarchique
+- Middleware de protection par rôle
+- Interface d'administration
+- Permissions granulaires
 
 ### Pages d'authentification disponibles
 
-- `/login` - Connexion utilisateur
+- `/login` - Connexion utilisateur (avec OAuth)
 - `/register` - Inscription utilisateur  
 - `/forgot-password` - Demande de réinitialisation
 - `/reset-password?token=...` - Réinitialisation de mot de passe
 - `/verify-email?token=...` - Vérification d'email
+- `/oauth-callback` - Callback OAuth (Google/GitHub)
 - `/dashboard` - Tableau de bord (protégé)
 - `/profile` - Profil utilisateur (protégé)
+- `/2fa` - Configuration 2FA (protégé)
 
-### Configuration email requise
+### Configuration OAuth et 2FA
 
 ```env
-# Configuration SMTP
+# OAuth Configuration
+GOOGLE_CLIENT_ID="your-google-client-id"
+GOOGLE_CLIENT_SECRET="your-google-client-secret"
+GITHUB_CLIENT_ID="your-github-client-id"
+GITHUB_CLIENT_SECRET="your-github-client-secret"
+
+# Configuration SMTP (pour 2FA et emails)
 SMTP_HOST="smtp.gmail.com"
 SMTP_PORT="587" 
 SMTP_SECURE="false"
@@ -284,6 +314,21 @@ FROM_EMAIL="noreply@votreapp.com"
 FRONTEND_URL="http://localhost:3000"
 ```
 
+### Configuration OAuth
+
+#### Google OAuth
+1. Allez sur [Google Cloud Console](https://console.cloud.google.com/)
+2. Créez un projet ou sélectionnez-en un
+3. Activez l'API Google+ 
+4. Créez des identifiants OAuth 2.0
+5. Ajoutez `http://localhost:3001/api/auth/google/callback` aux URL de redirection autorisées
+
+#### GitHub OAuth
+1. Allez sur [GitHub Developer Settings](https://github.com/settings/developers)
+2. Créez une nouvelle OAuth App
+3. Homepage URL: `http://localhost:3000`
+4. Authorization callback URL: `http://localhost:3001/api/auth/github/callback`
+
 ### API d'authentification
 
 Le backend expose une API REST complète :
@@ -291,6 +336,11 @@ Le backend expose une API REST complète :
 ```
 POST /api/auth/register         # Inscription
 POST /api/auth/login           # Connexion
+POST /api/auth/login-2fa       # Connexion avec 2FA
+GET  /api/auth/google          # OAuth Google
+GET  /api/auth/google/callback # Callback Google
+GET  /api/auth/github          # OAuth GitHub
+GET  /api/auth/github/callback # Callback GitHub
 POST /api/auth/verify-email    # Vérification email
 POST /api/auth/resend-verification # Renvoyer email
 POST /api/auth/forgot-password # Mot de passe oublié
@@ -298,6 +348,11 @@ POST /api/auth/reset-password  # Réinitialiser mot de passe
 GET  /api/auth/me             # Profil utilisateur (protégé)
 PUT  /api/auth/profile        # Modifier profil (protégé)
 POST /api/auth/change-password # Changer mot de passe (protégé)
+POST /api/auth/2fa/setup      # Configuration 2FA (protégé)
+POST /api/auth/2fa/confirm    # Confirmation 2FA (protégé)
+POST /api/auth/2fa/disable    # Désactivation 2FA (protégé)
+GET  /api/auth/admin/users    # Liste utilisateurs (admin)
+PUT  /api/auth/admin/users/role # Changer rôle (admin)
 POST /api/auth/logout         # Déconnexion
 ```
 

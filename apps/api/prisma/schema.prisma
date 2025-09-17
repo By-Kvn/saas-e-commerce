@@ -6,8 +6,8 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider = "sqlite"
+  url      = "file:./dev.db"
 }
 
 model User {
@@ -16,7 +16,7 @@ model User {
   password  String?  // Optional for OAuth users
   name      String?
   avatar    String?  // Profile picture URL
-  role      UserRole @default(USER)
+  role      String   @default("USER") // USER, PREMIUM, ADMIN (string instead of enum for SQLite)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -32,7 +32,7 @@ model User {
   // Two-Factor Authentication (2FA)
   twoFactorEnabled    Boolean @default(false)
   twoFactorSecret     String? // TOTP secret
-  backupCodes         String[] // Emergency backup codes
+  backupCodes         String? // Emergency backup codes as JSON string
 
   // OAuth providers
   oauthProviders OAuthProvider[]
@@ -65,32 +65,18 @@ model OAuthProvider {
   @@map("oauth_providers")
 }
 
-enum UserRole {
-  USER
-  PREMIUM
-  ADMIN
-}
-
 model Subscription {
-  id               String            @id @default(cuid())
+  id               String   @id @default(cuid())
   userId           String
   stripeCustomerId String
   stripePriceId    String
-  status           SubscriptionStatus
+  status           String   // ACTIVE, CANCELED, PAST_DUE, INCOMPLETE, TRIALING (string instead of enum for SQLite)
   currentPeriodStart DateTime
   currentPeriodEnd   DateTime
-  createdAt        DateTime          @default(now())
-  updatedAt        DateTime          @updatedAt
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("subscriptions")
-}
-
-enum SubscriptionStatus {
-  ACTIVE
-  CANCELED
-  PAST_DUE
-  INCOMPLETE
-  TRIALING
 }

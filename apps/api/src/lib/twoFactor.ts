@@ -56,26 +56,49 @@ export class TwoFactorService {
   }
 
   /**
-   * Verify a backup code
+   * Verify a backup code - handles both JSON string from DB and array input
    */
-  verifyBackupCode(backupCodes: string[], code: string): boolean {
+  verifyBackupCode(backupCodes: string[] | string | null, code: string): boolean {
     const normalizedCode = code.replace(/\s+/g, '').toUpperCase()
-    return backupCodes.includes(normalizedCode)
+    const codesArray = this.parseBackupCodes(backupCodes)
+    return codesArray.includes(normalizedCode)
   }
 
   /**
-   * Remove a used backup code
+   * Remove a used backup code - handles both JSON string from DB and array input
    */
-  removeBackupCode(backupCodes: string[], usedCode: string): string[] {
+  removeBackupCode(backupCodes: string[] | string | null, usedCode: string): string[] {
     const normalizedCode = usedCode.replace(/\s+/g, '').toUpperCase()
-    return backupCodes.filter(code => code !== normalizedCode)
+    const codesArray = this.parseBackupCodes(backupCodes)
+    return codesArray.filter(code => code !== normalizedCode)
   }
 
   /**
-   * Check if user has enough backup codes left
+   * Check if user has enough backup codes left - handles both JSON string from DB and array input
    */
-  shouldRegenerateBackupCodes(backupCodes: string[], threshold: number = 3): boolean {
-    return backupCodes.length <= threshold
+  shouldRegenerateBackupCodes(backupCodes: string[] | string | null, threshold: number = 3): boolean {
+    const codesArray = this.parseBackupCodes(backupCodes)
+    return codesArray.length <= threshold
+  }
+
+  /**
+   * Parse backup codes from database (JSON string) or direct array
+   */
+  private parseBackupCodes(backupCodes: string[] | string | null): string[] {
+    if (!backupCodes) return []
+    if (Array.isArray(backupCodes)) return backupCodes
+    try {
+      return JSON.parse(backupCodes) as string[]
+    } catch {
+      return []
+    }
+  }
+
+  /**
+   * Serialize backup codes for database storage
+   */
+  serializeBackupCodes(backupCodes: string[]): string {
+    return JSON.stringify(backupCodes)
   }
 }
 

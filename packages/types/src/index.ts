@@ -67,20 +67,31 @@ export interface AuthenticatedUser {
   id: string
   email: string
   name?: string
-  role?: string
+  role?: UserRole
   avatar?: string
   emailVerified: boolean
   twoFactorEnabled?: boolean
 }
 
+// User Role Types
+export const UserRole = {
+  USER: 'USER',
+  PREMIUM: 'PREMIUM',
+  ADMIN: 'ADMIN',
+} as const
+
+export type UserRole = typeof UserRole[keyof typeof UserRole]
+
 // Subscription Types
-export enum SubscriptionStatus {
-  ACTIVE = 'ACTIVE',
-  CANCELED = 'CANCELED',
-  PAST_DUE = 'PAST_DUE',
-  INCOMPLETE = 'INCOMPLETE',
-  TRIALING = 'TRIALING',
-}
+export const SubscriptionStatus = {
+  ACTIVE: 'ACTIVE',
+  CANCELED: 'CANCELED',
+  PAST_DUE: 'PAST_DUE',
+  INCOMPLETE: 'INCOMPLETE',
+  TRIALING: 'TRIALING',
+} as const
+
+export type SubscriptionStatus = typeof SubscriptionStatus[keyof typeof SubscriptionStatus]
 
 export interface Subscription {
   id: string
