@@ -5,12 +5,11 @@ const nextConfig = {
     API_URL: process.env.API_URL || 'http://localhost:3001',
     STRIPE_PUBLISHABLE_KEY: process.env.STRIPE_PUBLISHABLE_KEY,
   },
-  experimental: {
-    turbo: {
-      resolveAlias: {
-        '@/ui': '../../packages/ui/src',
-        '@/types': '../../packages/types/src',
-      },
+  // ✅ Updated: Move turbo config to top level
+  turbopack: {
+    resolveAlias: {
+      '@/ui': '../../packages/ui/src',
+      '@/types': '../../packages/types/src',
     },
   },
 }
