@@ -97,7 +97,7 @@ export async function authRoutes(fastify: FastifyInstance) {
         where: { email },
       })
 
-      if (!user) {
+      if (!user || !user.password) {
         return reply.code(401).send({ error: 'Email ou mot de passe incorrect' })
       }
 
@@ -212,7 +212,7 @@ export async function authRoutes(fastify: FastifyInstance) {
       })
 
       // Send verification email
-      await emailService.sendEmailVerification(email, emailVerifyToken, user.name)
+      await emailService.sendEmailVerification(email, emailVerifyToken, user.name || 'Utilisateur')
 
       return {
         message: 'Email de vérification renvoyé',
@@ -259,7 +259,7 @@ export async function authRoutes(fastify: FastifyInstance) {
 
       // Send reset email
       try {
-        await emailService.sendPasswordReset(email, passwordResetToken, user.name)
+        await emailService.sendPasswordReset(email, passwordResetToken, user.name || 'Utilisateur')
       } catch (emailError) {
         console.error('Failed to send password reset email:', emailError)
         return reply.code(500).send({ error: 'Erreur lors de l\'envoi de l\'email' })
@@ -426,7 +426,7 @@ export async function authRoutes(fastify: FastifyInstance) {
         where: { id: currentUser.id },
       })
 
-      if (!user) {
+      if (!user || !user.password) {
         return reply.code(404).send({ error: 'Utilisateur non trouvé' })
       }
 
@@ -589,7 +589,7 @@ export async function authRoutes(fastify: FastifyInstance) {
         where: { id: user.id },
         data: {
           twoFactorEnabled: true,
-          backupCodes,
+          backupCodes: twoFactorService.serializeBackupCodes(backupCodes),
         },
       })
 
@@ -646,7 +646,7 @@ export async function authRoutes(fastify: FastifyInstance) {
         data: {
           twoFactorEnabled: false,
           twoFactorSecret: null,
-          backupCodes: [],
+          backupCodes: null,
         },
       })
 
@@ -702,7 +702,8 @@ export async function authRoutes(fastify: FastifyInstance) {
         is2FAValid = twoFactorService.verifyBackupCode(user.backupCodes, backupCode)
         if (is2FAValid) {
           // Remove used backup code
-          updatedBackupCodes = twoFactorService.removeBackupCode(user.backupCodes, backupCode)
+          const updatedBackupCodesArray = twoFactorService.removeBackupCode(user.backupCodes, backupCode)
+          updatedBackupCodes = twoFactorService.serializeBackupCodes(updatedBackupCodesArray)
           await prisma.user.update({
             where: { id: user.id },
             data: { backupCodes: updatedBackupCodes },

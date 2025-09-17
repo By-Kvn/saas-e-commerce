@@ -12,6 +12,7 @@ const nextConfig = {
       '@/types': '../../packages/types/src',
     },
   },
+  outputFileTracingRoot: require('path').join(__dirname, '../../'),
 }
 
 module.exports = nextConfig

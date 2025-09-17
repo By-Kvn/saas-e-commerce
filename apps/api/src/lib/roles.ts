@@ -1,5 +1,5 @@
 import { FastifyRequest, FastifyReply } from 'fastify'
-import { UserRole } from '@prisma/client'
+import { UserRole } from '@saas/types'
 
 export interface AuthenticatedUserWithRole {
   id: string

@@ -68,7 +68,7 @@ export interface AuthenticatedUser {
   id: string
   email: string
   name?: string
-  role?: string
+  role?: UserRole
   avatar?: string
   emailVerified: boolean
   twoFactorEnabled?: boolean
