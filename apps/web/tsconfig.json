@@ -5,7 +5,8 @@
     "paths": {
       "@/*": ["./src/*"],
       "@/ui/*": ["../../packages/ui/src/*"],
-      "@/types/*": ["../../packages/types/src/*"]
+      "@/types/*": ["../../packages/types/src/*"],
+      "@/components/*": ["../../components/*"]
     }
   },
   "include": [
