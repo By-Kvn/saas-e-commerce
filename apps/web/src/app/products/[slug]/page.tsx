@@ -2,13 +2,13 @@ import React from 'react'
 import { Button } from '@saas/ui'
 
 interface ProductPageProps {
-  params: {
+  params: Promise<{
     slug: string
-  }
+  }>
 }
 
-export default function ProductPage({ params }: ProductPageProps) {
-  const { slug } = params
+export default async function ProductPage({ params }: ProductPageProps) {
+  const { slug } = await params
 
   // Données de démonstration
   const product = {
@@ -113,7 +113,7 @@ export default function ProductPage({ params }: ProductPageProps) {
                 </svg>
               </div>
             </div>
-            
+
             {/* Thumbnails */}
             <div className="grid grid-cols-3 gap-2">
               {product.images.map((image, index) => (
@@ -146,7 +146,7 @@ export default function ProductPage({ params }: ProductPageProps) {
             <h1 className="text-3xl font-bold text-gray-900 mb-4">
               {product.name}
             </h1>
-            
+
             {/* Price */}
             <div className="flex items-center mb-6">
               <span className="text-3xl font-bold text-gray-900">

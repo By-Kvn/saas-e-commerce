@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { useAuth } from '../../contexts/AuthContext'
 import { Button } from '@saas/ui'
+import Navigation from '../../components/Navigation'
 
 export default function DashboardPage() {
   const { user, logout, isAuthenticated, loading } = useAuth()
@@ -35,27 +36,7 @@ export default function DashboardPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
-      {/* Header */}
-      <header className="bg-white shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center py-4">
-            <div className="flex items-center">
-              <h1 className="text-2xl font-bold text-gray-900">Tableau de bord</h1>
-            </div>
-            <nav className="flex items-center space-x-4">
-              <Link
-                href="/profile"
-                className="text-gray-500 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium"
-              >
-                Mon profil
-              </Link>
-              <Button onClick={handleLogout} variant="outline" size="sm">
-                Déconnexion
-              </Button>
-            </nav>
-          </div>
-        </div>
-      </header>
+      <Navigation />
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">

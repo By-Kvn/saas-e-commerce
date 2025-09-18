@@ -12,6 +12,7 @@
   "dependencies": {
     "@saas/types": "*",
     "@saas/ui": "*",
+    "@stripe/stripe-js": "^7.9.0",
     "@tailwindcss/postcss": "^4.1.13",
     "axios": "^1.6.7",
     "jsonwebtoken": "^9.0.2",
