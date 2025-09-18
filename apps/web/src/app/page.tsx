@@ -52,8 +52,8 @@ export default function HomePage() {
 
 
       {/* Hero Section */}
-      <section className="bg-gradient-to-r from-purple-600 to-blue-600 text-white flex flex-row m-8 gap-6">
-      <div className="card max-w-7xl aspect-[21/9] mx-auto flex w-1/2 px-4 sm:px-6 lg:px-8 py-10 bg-[#1d1d1d] rounded-clamp">
+      <section className="bg-gradient-to-r from-purple-600 to-blue-600 text-white grid grid-cols-6 m-8 gap-6">
+      <div className="card aspect-1/1 flex col-span-2 px-4 sm:px-6 lg:px-8 py-10 bg-[#1d1d1d] rounded-clamp">
       <div className='card_content flex just-betwee grow flex-col relative'>
         <h2 className='text-xl font-bold text-white'>099 Supply</h2>
         <div className='card_description mt-auto'>
@@ -64,7 +64,7 @@ export default function HomePage() {
       </div>
       </div>
 
-      <div className="card max-w-7xl aspect-[21/9] w-full mx-auto px-4 sm:px-6 lg:px-8 py-10 bg-[#2c2c2c] rounded-clamp">
+      <div className="card h-full col-span-4 px-4 sm:px-6 lg:px-8 py-10 bg-[#2c2c2c] rounded-clamp">
       <div className='card_content flex  grow flex-col relative'>
         <h2 className='text-xl font-bold text-white mb-4'>Titre de la carte</h2>
         <div className='card_description mt-auto'>
@@ -77,14 +77,14 @@ export default function HomePage() {
       </section>
 
       {/* Featured Categories */}
-      <section className="flex gap-6 m-8">
-        <div className="inline-flex justify-center items-center w-1/2 py-5 px-6 bg-gray-800 text-white text-center no-underline select-none transition-all duration-150 ease-in-out border border-transparent rounded-[clamp(0.625rem,0.546875rem+0.390625vw,0.9375rem)] cursor-pointer hover:bg-gray-700">
+      <section className="grid grid-cols-6 gap-6 m-8">
+        <div className="inline-flex justify-center items-center col-span-2 py-5 px-6 bg-gray-800 text-white text-center no-underline select-none transition-all duration-150 ease-in-out border border-transparent rounded-[clamp(0.625rem,0.546875rem+0.390625vw,0.9375rem)] cursor-pointer hover:bg-gray-700">
         <button>Show all</button>
         </div>
-        <div className="inline-flex justify-center items-center w-1/2 py-5 px-6 bg-gray-800 text-white text-center no-underline select-none transition-all duration-150 ease-in-out border border-transparent rounded-[clamp(0.625rem,0.546875rem+0.390625vw,0.9375rem)] cursor-pointer hover:bg-gray-700">
+        <div className="inline-flex justify-center items-center col-span-2 py-5 px-6 bg-gray-800 text-white text-center no-underline select-none transition-all duration-150 ease-in-out border border-transparent rounded-[clamp(0.625rem,0.546875rem+0.390625vw,0.9375rem)] cursor-pointer hover:bg-gray-700">
         <button>Show all</button>
         </div>
-        <div className="inline-flex justify-center items-center w-1/2 py-5 px-6 bg-gray-800 text-white text-center no-underline select-none transition-all duration-150 ease-in-out border border-transparent rounded-[clamp(0.625rem,0.546875rem+0.390625vw,0.9375rem)] cursor-pointer hover:bg-gray-700">
+        <div className="inline-flex justify-center items-center col-span-2 py-5 px-6 bg-gray-800 text-white text-center no-underline select-none transition-all duration-150 ease-in-out border border-transparent rounded-[clamp(0.625rem,0.546875rem+0.390625vw,0.9375rem)] cursor-pointer hover:bg-gray-700">
         <button>Show all</button>
         </div>
         </section>
