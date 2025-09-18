@@ -5,7 +5,6 @@ import { HTMLMotionProps, motion } from 'motion/react';
 function cn(...inputs: (string | undefined | null | false)[]) {
   return inputs.filter(Boolean).join(' ')
 }
-
 export const GRADIENT_ANGLES = {
   top: 0,
   right: 90,
@@ -50,7 +49,7 @@ export function ProgressiveBlur({
 
         return (
           <motion.div
-            key={`blur-layer-${index}`}
+            key={index}
             className='pointer-events-none absolute inset-0 rounded-[inherit]'
             style={{
               maskImage: gradient,

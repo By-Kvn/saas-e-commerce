@@ -3,14 +3,63 @@
 import { useState, useEffect } from 'react'
 import { Button } from '@saas/ui'
 import { ApiResponse } from '@saas/types'
-import { ProgressiveBlur } from '../components/ProgressiveBlur'
-import { motion } from 'framer-motion'
+import { ProductCard } from '../components/ProductCard'
 
 export default function HomePage() {
   const [message, setMessage] = useState<string>('')
   const [loading, setLoading] = useState<boolean>(false)
-  const [isHover1, setIsHover1] = useState(false)
-  const [isHover2, setIsHover2] = useState(false)
+
+  // Données des produits
+  const products = [
+    {
+      image: 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=600',
+      alt: 'T-shirt collection',
+      title: 'TeeShirt Store',
+      subtitle: 'Collection Premium'
+    },
+    {
+      image: 'https://images.unsplash.com/photo-1576566588028-4147f3842f27?w=600',
+      alt: 'Fashion collection',
+      title: 'Mode Urbaine',
+      subtitle: 'Nouvelle Collection'
+    },
+    {
+      image: 'https://images.unsplash.com/photo-1503341504253-dff4815485f1?w=600',
+      alt: 'Street wear',
+      title: 'Street Wear',
+      subtitle: 'Style Urbain'
+    },
+    {
+      image: 'https://images.unsplash.com/photo-1503341504253-dff4815485f1?w=600',
+      alt: 'Street wear',
+      title: 'Street Wear',
+      subtitle: 'Style Urbain'
+    },
+    {
+      image: 'https://images.unsplash.com/photo-1571455786673-9d9d6c194f90?w=600',
+      alt: 'Premium collection',
+      title: 'Premium',
+      subtitle: 'Édition Limitée'
+    },
+    {
+      image: 'https://images.unsplash.com/photo-1503341504253-dff4815485f1?w=600',
+      alt: 'Street wear',
+      title: 'Street Wear',
+      subtitle: 'Style Urbain'
+    },
+    {
+      image: 'https://images.unsplash.com/photo-1562157873-818bc0726f68?w=600',
+      alt: 'Vintage style',
+      title: 'Vintage',
+      subtitle: 'Rétro Chic'
+    },
+    {
+      image: 'https://images.unsplash.com/photo-1544957992-20514f595d6f?w=600',
+      alt: 'Summer collection',
+      title: 'Summer',
+      subtitle: 'Collection Été'
+    }
+  ]
 
   const fetchHello = async () => {
     setLoading(true)
@@ -94,84 +143,16 @@ export default function HomePage() {
         </section>
 
         {/* Product cards */}
-      <section className="grid grid-cols-6 gap-6 m-8">
-        <div
-          className='relative col-span-3 aspect-square h-[300px] overflow-hidden rounded-[4px] cursor-pointer'
-          onMouseEnter={() => setIsHover1(true)}
-          onMouseLeave={() => setIsHover1(false)}
-          role="button"
-          tabIndex={0}
-        >
-          <img
-            src='https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=600'
-            alt='T-shirt collection'
-            className='absolute inset-0 w-full h-full object-cover'
+      <section className="grid grid-cols-4 gap-6 m-8">
+        {products.map((product, index) => (
+          <ProductCard
+            key={index}
+            image={product.image}
+            alt={product.alt}
+            title={product.title}
+            subtitle={product.subtitle}
           />
-          <ProgressiveBlur
-            className='pointer-events-none absolute bottom-0 left-0 h-[40%] w-full'
-            blurIntensity={1.5}
-            direction="bottom"
-            animate={isHover1 ? 'visible' : 'hidden'}
-            variants={{
-              hidden: { opacity: 0 },
-              visible: { opacity: 1 },
-            }}
-            transition={{ duration: 0.2, ease: 'easeOut' }}
-          />
-          <motion.div
-            className='absolute bottom-0 left-0'
-            animate={isHover1 ? 'visible' : 'hidden'}
-            variants={{
-              hidden: { opacity: 0 },
-              visible: { opacity: 1 },
-            }}
-            transition={{ duration: 0.2, ease: 'easeOut' }}
-          >
-            <div className='flex flex-col items-start gap-0 px-5 py-4'>
-              <p className='text-base font-medium text-white'>TeeShirt Store</p>
-              <span className='text-base text-zinc-300'>Collection Premium</span>
-            </div>
-          </motion.div>
-        </div>
-
-        <div
-          className='relative col-span-3 aspect-square h-[300px] overflow-hidden rounded-[4px] cursor-pointer'
-          onMouseEnter={() => setIsHover2(true)}
-          onMouseLeave={() => setIsHover2(false)}
-          role="button"
-          tabIndex={0}
-        >
-          <img
-            src='https://images.unsplash.com/photo-1576566588028-4147f3842f27?w=600'
-            alt='Fashion collection'
-            className='absolute inset-0 w-full h-full object-cover'
-          />
-          <ProgressiveBlur
-            className='pointer-events-none absolute bottom-0 left-0 h-[40%] w-full'
-            blurIntensity={1.5}
-            direction="bottom"
-            animate={isHover2 ? 'visible' : 'hidden'}
-            variants={{
-              hidden: { opacity: 0 },
-              visible: { opacity: 1 },
-            }}
-            transition={{ duration: 0.2, ease: 'easeOut' }}
-          />
-          <motion.div
-            className='absolute bottom-0 left-0'
-            animate={isHover2 ? 'visible' : 'hidden'}
-            variants={{
-              hidden: { opacity: 0 },
-              visible: { opacity: 1 },
-            }}
-            transition={{ duration: 0.2, ease: 'easeOut' }}
-          >
-            <div className='flex flex-col items-start gap-0 px-5 py-4'>
-              <p className='text-base font-medium text-white'>Mode Urbaine</p>
-              <span className='text-base text-zinc-300'>Nouvelle Collection</span>
-            </div>
-          </motion.div>
-        </div>
+        ))}
       </section>
 
 
