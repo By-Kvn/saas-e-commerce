@@ -139,7 +139,7 @@ export async function authRoutes(fastify: FastifyInstance) {
 
     try {
       const user = await prisma.user.findUnique({
-        where: { 
+        where: {
           emailVerifyToken: token,
           emailVerifyExpires: {
             gt: new Date(),
@@ -290,7 +290,7 @@ export async function authRoutes(fastify: FastifyInstance) {
 
     try {
       const user = await prisma.user.findUnique({
-        where: { 
+        where: {
           passwordResetToken: token,
           passwordResetExpires: {
             gt: new Date(),
@@ -365,7 +365,7 @@ export async function authRoutes(fastify: FastifyInstance) {
       if (email && email !== currentUser.email) {
         updateData.email = email
         updateData.emailVerified = false // Reset email verification if email changes
-        
+
         // Generate new verification token
         const emailVerifyToken = emailService.generateToken()
         const emailVerifyExpires = new Date(Date.now() + 24 * 60 * 60 * 1000) // 24 hours
@@ -393,8 +393,8 @@ export async function authRoutes(fastify: FastifyInstance) {
 
       return {
         user: updatedUser,
-        message: email && email !== currentUser.email 
-          ? 'Profil mis à jour. Veuillez vérifier votre nouvel email.' 
+        message: email && email !== currentUser.email
+          ? 'Profil mis à jour. Veuillez vérifier votre nouvel email.'
           : 'Profil mis à jour avec succès',
       }
     } catch (error) {
@@ -479,7 +479,7 @@ export async function authRoutes(fastify: FastifyInstance) {
 
         // Generate JWT token
         const token = fastify.jwt.sign({ userId: user.id, email: user.email })
-        
+
         // Redirect to frontend with token
         return reply.redirect(`${process.env.FRONTEND_URL}/oauth-callback?token=${token}&provider=google`)
       }
@@ -502,7 +502,7 @@ export async function authRoutes(fastify: FastifyInstance) {
 
         // Generate JWT token
         const token = fastify.jwt.sign({ userId: user.id, email: user.email })
-        
+
         // Redirect to frontend with token
         return reply.redirect(`${process.env.FRONTEND_URL}/oauth-callback?token=${token}&provider=github`)
       }
@@ -531,7 +531,7 @@ export async function authRoutes(fastify: FastifyInstance) {
 
       // Generate secret
       const { secret, otpauthUrl } = twoFactorService.generateSecret(user.email, 'SaaS App')
-      
+
       // Generate QR code
       const qrCodeDataUrl = otpauthUrl ? await twoFactorService.generateQRCode(otpauthUrl) : null
 
@@ -589,7 +589,7 @@ export async function authRoutes(fastify: FastifyInstance) {
         where: { id: user.id },
         data: {
           twoFactorEnabled: true,
-          backupCodes: twoFactorService.serializeBackupCodes(backupCodes),
+          backupCodes: { set: backupCodes },
         },
       })
 
@@ -646,7 +646,7 @@ export async function authRoutes(fastify: FastifyInstance) {
         data: {
           twoFactorEnabled: false,
           twoFactorSecret: null,
-          backupCodes: null,
+          backupCodes: { set: [] },
         },
       })
 
@@ -703,10 +703,9 @@ export async function authRoutes(fastify: FastifyInstance) {
         if (is2FAValid) {
           // Remove used backup code
           const updatedBackupCodesArray = twoFactorService.removeBackupCode(user.backupCodes, backupCode)
-          updatedBackupCodes = twoFactorService.serializeBackupCodes(updatedBackupCodesArray)
           await prisma.user.update({
             where: { id: user.id },
-            data: { backupCodes: updatedBackupCodes },
+            data: { backupCodes: { set: updatedBackupCodesArray } },
           })
         }
       }
