@@ -6,7 +6,7 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
@@ -45,14 +45,14 @@ model User {
 }
 
 model OAuthAccount {
-  id           String  @id @default(cuid())
-  userId       String
-  provider     String  // GOOGLE, GITHUB, etc.
+  id                String   @id @default(cuid())
+  userId            String
+  provider          String // GOOGLE, GITHUB, etc.
   providerAccountId String
-  accessToken  String?
-  refreshToken String?
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  accessToken       String?
+  refreshToken      String?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
 
   // Relations
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -62,17 +62,17 @@ model OAuthAccount {
 }
 
 model Subscription {
-  id                   String   @id @default(cuid())
+  id                   String    @id @default(cuid())
   userId               String
-  stripeSubscriptionId String   @unique
+  stripeSubscriptionId String    @unique
   stripePriceId        String
   stripeCustomerId     String
-  status               String   // ACTIVE, CANCELED, PAST_DUE, etc.
+  status               String // ACTIVE, CANCELED, PAST_DUE, etc.
   currentPeriodStart   DateTime
   currentPeriodEnd     DateTime
   canceledAt           DateTime?
-  createdAt            DateTime @default(now())
-  updatedAt            DateTime @updatedAt
+  createdAt            DateTime  @default(now())
+  updatedAt            DateTime  @updatedAt
 
   // Relations
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)

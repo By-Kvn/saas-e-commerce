@@ -95,9 +95,9 @@ export default function HomePage() {
       <section className="text-white grid grid-cols-6 m-8 gap-6">
       <div className="card aspect-1/1 flex col-span-2 px-4 sm:px-6 lg:px-8 py-10 bg-[#1d1d1d] rounded-clamp">
       <div className='card_content flex just-betwee grow flex-col relative'>
-        <h2 className='text-xl text-white'>099 Supply</h2>
+        <h2 className='text-xl text-white'>ERZA v1.0.1</h2>
         <div className='card_description font-light mt-auto'>
-          <p>Discover digital tools for creatives. A growing collection of Photoshop mockups and Framer components built for modern design workflows.</p>
+          <p>ERZA is a newcomer brand from France, specializing in urban fashion and streetwear.</p>
         </div>
         <div className='card_media absolute'>
         </div>
@@ -167,8 +167,27 @@ export default function HomePage() {
 
 
       {/* CTA Section */}
-      <section className="bg-gray-900 text-white py-16">
-
+      <section className="text-white grid grid-cols-6 gap-6 m-8 items-center">
+        <div className="col-span-2 bg-[#1d1d1d] p-4 rounded-lg flex items-center justify-center h-full">
+          <span className="text-white font-medium">Website made by ERZA's CEO</span>
+        </div>
+        <div className="col-span-2 bg-[#1d1d1d] p-6 rounded-lg">
+          {/* <h3 className="text-xl font-bold mb-4">Newsletter</h3> */}
+          <p className="text-sm mb-4">Restez informé des dernières nouveautés ERZA</p>
+          <div className="flex gap-2">
+            <input
+              type="email"
+              placeholder="Votre email"
+              className="flex-1 px-3 py-2 bg-white/10 border border-white/20 rounded-md text-white placeholder-white/60 focus:outline-none focus:border-white/40"
+            />
+            <button className="px-4 py-2 bg-white text-black font-medium rounded-md hover:bg-white/90 transition-colors">
+              S'abonner
+            </button>
+          </div>
+        </div>
+        <div className="col-span-2 bg-[#1d1d1d] p-4 rounded-lg flex items-center justify-center h-full">
+          <span className="text-white font-medium">Website made by ERZA's CEO</span>
+        </div>
       </section>
 
       {/* Footer */}
