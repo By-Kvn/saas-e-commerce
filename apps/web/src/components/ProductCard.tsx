@@ -17,7 +17,7 @@ export function ProductCard({ image, alt, title, subtitle, className = '' }: Pro
 
   return (
     <div
-      className={`relative aspect-square overflow-hidden rounded-[4px] cursor-pointer rounded-clamp ${className}`}
+      className={`relative aspect-square overflow-hidden rounded-[4px] bg-[#2c2c2c] cursor-pointer rounded-clamp ${className}`}
       onMouseEnter={() => setIsHover(true)}
       onMouseLeave={() => setIsHover(false)}
       role="button"
@@ -35,7 +35,7 @@ export function ProductCard({ image, alt, title, subtitle, className = '' }: Pro
         animate={isHover ? 'visible' : 'hidden'}
         variants={{
           hidden: { opacity: 0 },
-          visible: { opacity: 1 },
+          visible: { opacity: 0 },
         }}
         transition={{ duration: 0.2, ease: 'easeOut' }}
       />

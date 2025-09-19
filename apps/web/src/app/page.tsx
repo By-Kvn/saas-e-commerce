@@ -13,49 +13,49 @@ export default function HomePage() {
   // Données des produits
   const products = [
     {
-      image: 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=600',
+      image: '/images/products/tee-v1-full-erza.png',
       alt: 'T-shirt collection',
       title: 'TeeShirt Store',
       subtitle: 'Collection Premium'
     },
     {
-      image: 'https://images.unsplash.com/photo-1576566588028-4147f3842f27?w=600',
+      image: '/images/products/tee-v1-full-erza.png',
       alt: 'Fashion collection',
       title: 'Mode Urbaine',
       subtitle: 'Nouvelle Collection'
     },
     {
-      image: 'https://images.unsplash.com/photo-1503341504253-dff4815485f1?w=600',
+      image: '/images/products/tee-v1-full-erza.png',
       alt: 'Street wear',
       title: 'Street Wear',
       subtitle: 'Style Urbain'
     },
     {
-      image: 'https://images.unsplash.com/photo-1503341504253-dff4815485f1?w=600',
+      image: '/images/products/tee-v1-full-erza.png',
       alt: 'Street wear',
       title: 'Street Wear',
       subtitle: 'Style Urbain'
     },
     {
-      image: 'https://images.unsplash.com/photo-1571455786673-9d9d6c194f90?w=600',
+      image: '/images/products/tee-v1-full-erza.png',
       alt: 'Premium collection',
       title: 'Premium',
       subtitle: 'Édition Limitée'
     },
     {
-      image: 'https://images.unsplash.com/photo-1503341504253-dff4815485f1?w=600',
+      image: '/images/products/tee-v1-full-erza.png',
       alt: 'Street wear',
       title: 'Street Wear',
       subtitle: 'Style Urbain'
     },
     {
-      image: 'https://images.unsplash.com/photo-1562157873-818bc0726f68?w=600',
+      image: '/images/products/tee-v1-full-erza.png',
       alt: 'Vintage style',
       title: 'Vintage',
       subtitle: 'Rétro Chic'
     },
     {
-      image: 'https://images.unsplash.com/photo-1544957992-20514f595d6f?w=600',
+      image: '/images/products/tee-v1-full-erza.png',
       alt: 'Summer collection',
       title: 'Summer',
       subtitle: 'Collection Été'
@@ -136,7 +136,7 @@ export default function HomePage() {
           className={`inline-flex justify-center items-center col-span-2 py-5 px-6 text-white text-center no-underline select-none transition-all duration-150 ease-in-out border rounded-[clamp(0.625rem,0.546875rem+0.390625vw,0.9375rem)] cursor-pointer ${
             selectedCategory === 0 
               ? 'bg-[#1d1d1d] border-[#1d1d1d]' 
-              : 'bg-transparent border-gray-400 hover:border-[#1d1d1d] hover:bg-[#1d1d1d]/10'
+              : 'bg-transparent border-[#1d1d1d] hover:border-gray-400 hover:bg-[#1d1d1d]/10'
           }`}
           onClick={() => setSelectedCategory(0)}
         >
@@ -146,7 +146,7 @@ export default function HomePage() {
           className={`inline-flex justify-center items-center col-span-2 py-5 px-6 text-white text-center no-underline select-none transition-all duration-150 ease-in-out border rounded-[clamp(0.625rem,0.546875rem+0.390625vw,0.9375rem)] cursor-pointer ${
             selectedCategory === 1 
               ? 'bg-[#1d1d1d] border-[#1d1d1d]' 
-              : 'bg-transparent border-gray-400 hover:border-[#1d1d1d] hover:bg-[#1d1d1d]/10'
+              : 'bg-transparent border-[#1d1d1d] hover:border-gray-400 hover:bg-[#1d1d1d]/10'
           }`}
           onClick={() => setSelectedCategory(1)}
         >
@@ -156,7 +156,7 @@ export default function HomePage() {
           className={`inline-flex justify-center items-center col-span-2 py-5 px-6 text-white text-center no-underline select-none transition-all duration-150 ease-in-out border rounded-[clamp(0.625rem,0.546875rem+0.390625vw,0.9375rem)] cursor-pointer ${
             selectedCategory === 2 
               ? 'bg-[#1d1d1d] border-[#1d1d1d]' 
-              : 'bg-transparent border-gray-400 hover:border-[#1d1d1d] hover:bg-[#1d1d1d]/10'
+              : 'bg-transparent border-[#1d1d1d] hover:border-gray-400 hover:bg-[#1d1d1d]/10'
           }`}
           onClick={() => setSelectedCategory(2)}
         >
