@@ -17,3 +17,8 @@ body {
   background: var(--background);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* Classe personnalisée pour border-radius responsive */
+.rounded-clamp {
+  border-radius: clamp(.625rem, .46875rem + .78125vw, 1.25rem);
+}
