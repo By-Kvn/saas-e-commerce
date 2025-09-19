@@ -9,40 +9,37 @@ const plans = [
   {
     id: 'starter',
     name: 'Starter',
-    price: '€9.99',
+    price: '€1.99',
     priceId: 'price_1XXXXXXXXXXXXXXXXX', // Remplacez par votre vrai Price ID Stripe
     features: [
-      'Jusqu\'à 1 000 produits',
+      'Accès anticipé',
       'Support email',
-      'Tableau de bord basique',
-      'Paiements Stripe'
+      'Accès au groupe erza',
     ]
   },
   {
-    id: 'pro',
-    name: 'Pro',
-    price: '€29.99',
+    id: 'standard',
+    name: 'Standard',
+    price: '€4.99',
     priceId: 'price_2XXXXXXXXXXXXXXXXX', // Remplacez par votre vrai Price ID Stripe
     features: [
-      'Produits illimités',
+      'Accès anticipé',
       'Support prioritaire',
-      'Analytics avancés',
-      'API complète',
-      'Webhooks'
+      'Accès au groupe erza',
+      `Accès a nos inspirations d'outfit`,
     ],
     popular: true
   },
   {
-    id: 'enterprise',
-    name: 'Enterprise',
-    price: '€99.99',
+    id: 'premium',
+    name: 'Premium',
+    price: '€9.99',
     priceId: 'price_3XXXXXXXXXXXXXXXXX', // Remplacez par votre vrai Price ID Stripe
     features: [
-      'Tout de Pro',
+      'Tout de standard',
       'Support téléphonique',
-      'Intégrations personnalisées',
-      'SLA garantie',
-      'Formation dédiée'
+      'Accès aux futurs événements Erza',
+      'Livraison Grauite'
     ]
   }
 ]
@@ -148,7 +145,7 @@ export default function PaymentPage() {
                 <button
                   onClick={() => handleSubscribe(plan.priceId, plan.id)}
                   disabled={loading === plan.id}
-                  className={`mt-8 w-full py-3 px-4 rounded-md font-medium text-white transition-colors
+                  className={`mt-8 w-full py-3 px-4 cursor-pointer rounded-md font-medium text-white transition-colors
                     ${plan.popular
                       ? 'bg-blue-600 hover:bg-blue-700'
                       : 'bg-gray-800 hover:bg-gray-900'
