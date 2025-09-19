@@ -17,40 +17,40 @@ export function Navigation() {
   }
 
   return (
-    <nav className="bg-white shadow-lg border-b">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <nav className="bg-black">
+      <div className="mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
           <div className="flex items-center">
             <Link href="/" className="flex-shrink-0 flex items-center">
-              <span className="text-xl font-bold text-gray-900">SaaS Platform</span>
+              <span className="text-xl font-bold text-white">ERZA</span>
             </Link>
           </div>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex md:items-center md:space-x-8">
+          <div className="hidden md:flex md:items-center md:space-x-8 text-white">
             {user ? (
               <>
                 <Link
                   href="/dashboard"
-                  className="text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium"
+                  className="px-3 py-2 rounded-md text-sm font-medium"
                 >
                   Dashboard
                 </Link>
                 <Link
                   href="/payment"
-                  className="text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium"
+                  className=" px-3 py-2 rounded-md text-sm font-medium"
                 >
                   Abonnements
                 </Link>
                 <Link
                   href="/profile"
-                  className="text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium"
+                  className=" px-3 py-2 rounded-md text-sm font-medium"
                 >
                   Profil
                 </Link>
                 <Link
                   href="/cart"
-                  className="text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium relative"
+                  className=" px-3 py-2 rounded-md text-sm font-medium relative"
                 >
                   <svg
                     className="w-6 h-6"
@@ -72,7 +72,7 @@ export function Navigation() {
                 </Link>
                 <button
                   onClick={handleLogout}
-                  className="text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium"
+                  className=" px-3 py-2 rounded-md text-sm font-medium"
                 >
                   Déconnexion
                 </button>
@@ -81,13 +81,13 @@ export function Navigation() {
               <>
                 <Link
                   href="/products"
-                  className="text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium"
+                  className=" px-3 py-2 rounded-md text-sm font-medium"
                 >
                   Produits
                 </Link>
                 <Link
                   href="/cart"
-                  className="text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium relative"
+                  className=" px-3 py-2 rounded-md text-sm font-medium relative"
                 >
                   <svg
                     className="w-6 h-6"
@@ -109,7 +109,7 @@ export function Navigation() {
                 </Link>
                 <Link
                   href="/login"
-                  className="text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium"
+                  className=" px-3 py-2 rounded-md text-sm font-medium"
                 >
                   Connexion
                 </Link>
@@ -127,7 +127,9 @@ export function Navigation() {
           <div className="md:hidden flex items-center">
             <button
               onClick={() => setIsOpen(!isOpen)}
-              className="text-gray-700 hover:text-gray-900 focus:outline-none focus:text-gray-900"
+              className=" focus:outline-none focus:text-gray-900"
+              aria-label={isOpen ? "Fermer le menu" : "Ouvrir le menu"}
+              title={isOpen ? "Fermer le menu" : "Ouvrir le menu"}
             >
               <svg className="h-6 w-6" fill="none" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" stroke="currentColor">
                 {isOpen ? (
@@ -148,28 +150,28 @@ export function Navigation() {
                 <>
                   <Link
                     href="/dashboard"
-                    className="block text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md text-base font-medium"
+                    className="block  px-3 py-2 rounded-md text-base font-medium"
                     onClick={() => setIsOpen(false)}
                   >
                     Dashboard
                   </Link>
                   <Link
                     href="/payment"
-                    className="block text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md text-base font-medium"
+                    className="block  px-3 py-2 rounded-md text-base font-medium"
                     onClick={() => setIsOpen(false)}
                   >
                     Abonnements
                   </Link>
                   <Link
                     href="/profile"
-                    className="block text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md text-base font-medium"
+                    className="block  px-3 py-2 rounded-md text-base font-medium"
                     onClick={() => setIsOpen(false)}
                   >
                     Profil
                   </Link>
                   <Link
                     href="/cart"
-                    className="flex items-center text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md text-base font-medium relative"
+                    className="flex items-center  px-3 py-2 rounded-md text-base font-medium relative"
                     onClick={() => setIsOpen(false)}
                   >
                     <svg
@@ -190,7 +192,7 @@ export function Navigation() {
                   </Link>
                   <button
                     onClick={handleLogout}
-                    className="block w-full text-left text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md text-base font-medium"
+                    className="block w-full text-left  px-3 py-2 rounded-md text-base font-medium"
                   >
                     Déconnexion
                   </button>
@@ -199,14 +201,14 @@ export function Navigation() {
                 <>
                   <Link
                     href="/products"
-                    className="block text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md text-base font-medium"
+                    className="block  px-3 py-2 rounded-md text-base font-medium"
                     onClick={() => setIsOpen(false)}
                   >
                     Produits
                   </Link>
                   <Link
                     href="/cart"
-                    className="flex items-center text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md text-base font-medium relative"
+                    className="flex items-center  px-3 py-2 rounded-md text-base font-medium relative"
                     onClick={() => setIsOpen(false)}
                   >
                     <svg
@@ -227,7 +229,7 @@ export function Navigation() {
                   </Link>
                   <Link
                     href="/login"
-                    className="block text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md text-base font-medium"
+                    className="block  px-3 py-2 rounded-md text-base font-medium"
                     onClick={() => setIsOpen(false)}
                   >
                     Connexion
