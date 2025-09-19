@@ -1,10 +1,10 @@
 # 📊 BILAN PROJET MASTER 2 - SaaS Boilerplate
 
-## ✅ FAIT (80% du projet)
+## ✅ FAIT (85% du projet)
 
 ### 🏗️ Architecture & Infrastructure
 - ✅ **Turborepo monorepo** (dépassé les attentes)
-- ✅ **Next.js 15 + TypeScript** (frontend moderne)  
+- ✅ **Next.js 15 + TypeScript** (frontend moderne)
 - ✅ **Fastify + TypeScript** (backend performant)
 - ✅ **PostgreSQL + Prisma ORM** (base de données)
 - ✅ **Docker Compose** (PostgreSQL, Redis, Mailhog)
@@ -17,15 +17,25 @@
 - ✅ **Inscription/connexion** API
 - ✅ **Gestion utilisateurs** (profil, CRUD)
 
-### 💳 Stripe (80% fait)
+### 💳 Stripe (95% fait)
 - ✅ **Intégration Stripe** complète
-- ✅ **Checkout sessions** 
+- ✅ **Checkout sessions**
+- ✅ **Page de paiement dédiée** avec plans d'abonnement
+- ✅ **Pages succès/annulation**
+- ✅ **Navigation intégrée**
+- ✅ **Gestion des erreurs** de paiement
+- ✅ **Variables d'environnement** configurées
+- ✅ **Documentation** complète (STRIPE_SETUP.md)
+- ✅ **Script de démarrage** automatisé
 - ✅ **Modèle Subscription** Prisma
 - ✅ **Structure webhooks** (simplifié)
 
-### 🎨 Frontend (90% fait)
+### 🎨 Frontend (95% fait)
 - ✅ **Design moderne** Tailwind CSS
 - ✅ **Page d'accueil** professionnelle
+- ✅ **Navigation responsive**
+- ✅ **Pages de paiement** Stripe intégrées
+- ✅ **Composants UI** réutilisables (Card, Button, etc.)
 - ✅ **Demo API** interactive
 - ✅ **Responsive design**
 
@@ -47,7 +57,7 @@
 apps/api/src/services/email.service.ts
 apps/api/src/templates/
 ├── welcome.html
-├── email-verification.html  
+├── email-verification.html
 ├── password-reset.html
 └── payment-confirmation.html
 ```
@@ -94,7 +104,7 @@ apps/api/src/templates/
 2. **Pages Auth Frontend** (1h)
 3. **Dashboard basique** (30min)
 
-### 📝 DEMAIN (18 sept) - 2h  
+### 📝 DEMAIN (18 sept) - 2h
 1. **Validation/Sécurité** (45min)
 2. **Tests supplémentaires** (45min)
 3. **Documentation** (30min)

@@ -37,10 +37,6 @@ model User {
   // Stripe customer ID
   stripeCustomerId String?
 
-  // Relations
-  oauthAccounts OAuthAccount[]
-  subscriptions Subscription[]
-
   @@map("users")
 }
 

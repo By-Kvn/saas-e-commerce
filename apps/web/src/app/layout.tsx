@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import Script from 'next/script'
 import { AuthProvider } from '../contexts/AuthContext'
 import './globals.css'
 import '../styles/fonts.css'
@@ -19,6 +20,10 @@ export default function RootLayout({
         <AuthProvider>
           {children}
         </AuthProvider>
+        <Script
+          src="https://js.stripe.com/v3/"
+          strategy="lazyOnload"
+        />
       </body>
     </html>
   )
