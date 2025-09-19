@@ -11,7 +11,7 @@ export default function HomePage() {
   const fetchHello = async () => {
     setLoading(true)
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}/api/hello`)
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3002'}/api/hello`)
       const data: ApiResponse = await response.json()
       setMessage(data.message)
     } catch (error) {
@@ -35,15 +35,22 @@ export default function HomePage() {
             <div className="flex items-center">
               <h1 className="text-2xl font-bold text-gray-900">TeeShirt Store</h1>
             </div>
-            <nav className="flex space-x-8">
+            <nav className="flex space-x-4 items-center">
               <a href="/" className="text-gray-900 hover:text-gray-600">
                 Accueil
               </a>
               <a href="/products" className="text-gray-900 hover:text-gray-600">
                 Produits
               </a>
-              <Button variant="primary" size="sm">
-                Sign In
+              <a href="/login" className="text-gray-600 hover:text-gray-900">
+                Se connecter
+              </a>
+              <Button 
+                variant="primary" 
+                size="sm"
+                onClick={() => window.location.href = '/register'}
+              >
+                S'inscrire
               </Button>
             </nav>
           </div>
@@ -146,12 +153,15 @@ export default function HomePage() {
           <div className="flex flex-col sm:flex-row max-w-md mx-auto gap-4">
             <input
               type="email"
-              placeholder="Votre email"
-              className="flex-1 px-4 py-2 rounded-md text-gray-900"
+              placeholder="votre.email@exemple.com"
+              className="flex-1 px-4 py-2 rounded-md text-gray-900 placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500"
             />
-            <button className="bg-purple-600 hover:bg-purple-700">
+            <Button 
+              className="bg-purple-600 hover:bg-purple-700 text-white px-6 py-2 rounded-md font-medium"
+              onClick={() => window.location.href = '/register'}
+            >
               S'inscrire
-            </button>
+            </Button>
           </div>
         </div>
       </section>

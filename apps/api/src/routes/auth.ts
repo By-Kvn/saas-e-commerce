@@ -36,7 +36,7 @@ export async function authRoutes(fastify: FastifyInstance) {
       const hashedPassword = await bcrypt.hash(password, 12)
 
       // Generate email verification token
-      const emailVerifyToken = emailService.generateToken()
+      const emailVerifyToken = emailService.generateVerificationToken()
       const emailVerifyExpires = new Date(Date.now() + 24 * 60 * 60 * 1000) // 24 hours
 
       // Create user
@@ -198,7 +198,7 @@ export async function authRoutes(fastify: FastifyInstance) {
       }
 
       // Generate new verification token
-      const emailVerifyToken = emailService.generateToken()
+      const emailVerifyToken = emailService.generateVerificationToken()
       const emailVerifyExpires = new Date(Date.now() + 24 * 60 * 60 * 1000) // 24 hours
 
       await prisma.user.update({
@@ -244,7 +244,7 @@ export async function authRoutes(fastify: FastifyInstance) {
       }
 
       // Generate reset token
-      const passwordResetToken = emailService.generateToken()
+      const passwordResetToken = emailService.generateVerificationToken()
       const passwordResetExpires = new Date(Date.now() + 60 * 60 * 1000) // 1 hour
 
       await prisma.user.update({
@@ -365,7 +365,7 @@ export async function authRoutes(fastify: FastifyInstance) {
         updateData.emailVerified = false // Reset email verification if email changes
         
         // Generate new verification token
-        const emailVerifyToken = emailService.generateToken()
+        const emailVerifyToken = emailService.generateVerificationToken()
         const emailVerifyExpires = new Date(Date.now() + 24 * 60 * 60 * 1000) // 24 hours
         updateData.emailVerifyToken = emailVerifyToken
         updateData.emailVerifyExpires = emailVerifyExpires

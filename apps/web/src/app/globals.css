@@ -17,3 +17,25 @@ body {
   background: var(--background);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* Placeholder styles plus sombres */
+::placeholder {
+  color: #4B5563; /* gray-600 */
+  opacity: 1;
+}
+
+/* Firefox */
+::-moz-placeholder {
+  color: #4B5563; /* gray-600 */
+  opacity: 1;
+}
+
+/* Edge/IE */
+::-ms-input-placeholder {
+  color: #4B5563; /* gray-600 */
+}
+
+/* Webkit browsers */
+::-webkit-input-placeholder {
+  color: #4B5563; /* gray-600 */
+}

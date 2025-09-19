@@ -1,122 +1,231 @@
-import nodemailer from 'nodemailer'
-import crypto from 'crypto'
+import * as nodemailer from 'nodemailer';
+import crypto from 'crypto';
+import { render } from '@react-email/render';
+import EmailVerification from '../emails/EmailVerification';
+import PasswordReset from '../emails/PasswordReset';
+import WelcomeEmail from '../emails/WelcomeEmail';
 
 export class EmailService {
-  private transporter: nodemailer.Transporter
+  private transporter: any;
 
   constructor() {
-    this.transporter = nodemailer.createTransport({
-      host: process.env.SMTP_HOST || 'smtp.gmail.com',
-      port: parseInt(process.env.SMTP_PORT || '587'),
-      secure: process.env.SMTP_SECURE === 'true',
-      auth: {
-        user: process.env.SMTP_USER,
-        pass: process.env.SMTP_PASSWORD,
-      },
-    })
+    this.transporter = null;
   }
 
-  generateToken(): string {
-    return crypto.randomBytes(32).toString('hex')
-  }
+  async init() {
+    try {
+      console.log('🔧 Initialisation du service email...');
+      console.log(`📍 Variables d'environnement détectées:`);
+      console.log(`   - SMTP_USER: ${process.env.SMTP_USER ? '✅ Configuré' : '❌ Manquant'}`);
+      console.log(`   - SMTP_PASSWORD: ${process.env.SMTP_PASSWORD ? '✅ Configuré' : '❌ Manquant'}`);
+      console.log(`   - SMTP_HOST: ${process.env.SMTP_HOST || 'smtp.gmail.com (par défaut)'}`);
+      console.log(`   - SMTP_PORT: ${process.env.SMTP_PORT || '587 (par défaut)'}`);
+      
+      if (process.env.SMTP_USER && process.env.SMTP_PASSWORD) {
+        console.log('🎯 Configuration SMTP détectée, tentative de connexion...');
+        
+        this.transporter = nodemailer.createTransport({
+          host: process.env.SMTP_HOST || 'smtp.gmail.com',
+          port: parseInt(process.env.SMTP_PORT || '587'),
+          secure: process.env.SMTP_SECURE === 'true',
+          auth: {
+            user: process.env.SMTP_USER,
+            pass: process.env.SMTP_PASSWORD
+          }
+        });
 
-  async sendEmailVerification(email: string, token: string, name?: string): Promise<void> {
-    const verificationUrl = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/verify-email?token=${token}`
-    
-    const mailOptions = {
-      from: process.env.FROM_EMAIL || 'noreply@example.com',
-      to: email,
-      subject: 'Vérifiez votre adresse email',
-      html: `
-        <!DOCTYPE html>
-        <html>
-        <head>
-          <meta charset="utf-8">
-          <meta name="viewport" content="width=device-width, initial-scale=1.0">
-          <title>Vérification d'email</title>
-        </head>
-        <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
-          <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 30px; text-align: center; color: white; border-radius: 10px 10px 0 0;">
-            <h1 style="margin: 0; font-size: 28px;">Bienvenue${name ? ` ${name}` : ''} !</h1>
-            <p style="margin: 10px 0 0 0; font-size: 16px;">Vérifiez votre adresse email pour commencer</p>
-          </div>
+        try {
+          console.log('🔌 Test de connexion au serveur SMTP...');
+          await this.transporter.verify();
           
-          <div style="background: #f9f9f9; padding: 30px; border-radius: 0 0 10px 10px; border: 1px solid #ddd; border-top: none;">
-            <p style="font-size: 16px; margin-bottom: 25px;">
-              Merci de vous être inscrit ! Pour activer votre compte, veuillez cliquer sur le bouton ci-dessous :
-            </p>
-            
-            <div style="text-align: center; margin: 30px 0;">
-              <a href="${verificationUrl}" style="background: #667eea; color: white; padding: 15px 30px; text-decoration: none; border-radius: 5px; font-size: 16px; font-weight: bold; display: inline-block;">
-                Vérifier mon email
-              </a>
-            </div>
-            
-            <p style="font-size: 14px; color: #666; margin-top: 25px;">
-              Si le bouton ne fonctionne pas, copiez et collez ce lien dans votre navigateur :<br>
-              <a href="${verificationUrl}" style="color: #667eea; word-break: break-all;">${verificationUrl}</a>
-            </p>
-            
-            <p style="font-size: 14px; color: #666; margin-top: 25px; border-top: 1px solid #ddd; padding-top: 20px;">
-              Ce lien expirera dans 24 heures. Si vous n'avez pas demandé cette vérification, vous pouvez ignorer cet email.
-            </p>
-          </div>
-        </body>
-        </html>
-      `,
+          console.log('✅ Service email initialisé avec SMTP personnalisé');
+          console.log(`📧 Serveur: ${process.env.SMTP_HOST || 'smtp.gmail.com'}`);
+          console.log(`👤 Utilisateur: ${process.env.SMTP_USER}`);
+          console.log('🚀 Prêt à envoyer des emails réels !');
+          
+          return true;
+        } catch (smtpError) {
+          console.error('❌ Erreur de connexion SMTP:', smtpError);
+          console.log('🔧 Vérifiez vos identifiants Gmail et mot de passe d\'application');
+          console.log('🔄 Basculement vers mode test (Ethereal)...');
+        }
+      } else {
+        console.log('⚠️  Aucune configuration SMTP trouvée.');
+        console.log('📝 Pour envoyer des vrais emails, configurez dans .env :');
+        console.log('   SMTP_USER=votre.email@gmail.com');
+        console.log('   SMTP_PASSWORD=votre-mot-de-passe-app');
+      }
+      
+      console.log('🧪 Configuration du mode test avec Ethereal Email...');
+      const testAccount = await nodemailer.createTestAccount();
+      
+      this.transporter = nodemailer.createTransport({
+        host: 'smtp.ethereal.email',
+        port: 587,
+        secure: false,
+        auth: {
+          user: testAccount.user,
+          pass: testAccount.pass,
+        },
+      });
+
+      console.log('🧪 Service email initialisé en mode TEST (Ethereal Email)');
+      console.log(`📧 Compte test: ${testAccount.user}`);
+      
+      return true;
+    } catch (error) {
+      console.error('❌ Erreur initialisation email:', error);
+      return false;
+    }
+  }
+
+  async sendEmailVerification(email: string, token: string, name?: string) {
+    if (!this.transporter) {
+      await this.init();
     }
 
-    await this.transporter.sendMail(mailOptions)
-  }
+    console.log(`📧 Tentative d'envoi email de vérification à: ${email}`);
 
-  async sendPasswordReset(email: string, token: string, name?: string): Promise<void> {
-    const resetUrl = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/reset-password?token=${token}`
+    const verificationLink = `http://localhost:3000/verify-email?token=${token}`;
+    const userName = name || 'Utilisateur';
+    
+    // Génération du HTML avec React Email
+    const emailHtml = await render(EmailVerification({ 
+      userFirstname: userName, 
+      verificationLink 
+    }));
     
     const mailOptions = {
-      from: process.env.FROM_EMAIL || 'noreply@example.com',
+      from: `"${process.env.FROM_NAME || 'SaaS E-Commerce'}" <${process.env.FROM_EMAIL || process.env.SMTP_USER || 'noreply@saas-ecommerce.com'}>`,
       to: email,
-      subject: 'Réinitialisation de votre mot de passe',
-      html: `
-        <!DOCTYPE html>
-        <html>
-        <head>
-          <meta charset="utf-8">
-          <meta name="viewport" content="width=device-width, initial-scale=1.0">
-          <title>Réinitialisation de mot de passe</title>
-        </head>
-        <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
-          <div style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); padding: 30px; text-align: center; color: white; border-radius: 10px 10px 0 0;">
-            <h1 style="margin: 0; font-size: 28px;">Réinitialisation de mot de passe</h1>
-            <p style="margin: 10px 0 0 0; font-size: 16px;">Une demande a été faite pour votre compte</p>
-          </div>
-          
-          <div style="background: #f9f9f9; padding: 30px; border-radius: 0 0 10px 10px; border: 1px solid #ddd; border-top: none;">
-            <p style="font-size: 16px; margin-bottom: 25px;">
-              Bonjour${name ? ` ${name}` : ''}, nous avons reçu une demande de réinitialisation de mot de passe pour votre compte.
-            </p>
-            
-            <div style="text-align: center; margin: 30px 0;">
-              <a href="${resetUrl}" style="background: #f5576c; color: white; padding: 15px 30px; text-decoration: none; border-radius: 5px; font-size: 16px; font-weight: bold; display: inline-block;">
-                Réinitialiser mon mot de passe
-              </a>
-            </div>
-            
-            <p style="font-size: 14px; color: #666; margin-top: 25px;">
-              Si le bouton ne fonctionne pas, copiez et collez ce lien dans votre navigateur :<br>
-              <a href="${resetUrl}" style="color: #f5576c; word-break: break-all;">${resetUrl}</a>
-            </p>
-            
-            <p style="font-size: 14px; color: #666; margin-top: 25px; border-top: 1px solid #ddd; padding-top: 20px;">
-              Ce lien expirera dans 1 heure. Si vous n'avez pas demandé cette réinitialisation, vous pouvez ignorer cet email en toute sécurité.
-            </p>
-          </div>
-        </body>
-        </html>
-      `,
+      subject: 'Vérifiez votre adresse email - SaaS E-Commerce',
+      html: emailHtml,
+    };
+
+    try {
+      console.log('📤 Envoi de l\'email en cours...');
+      const info = await this.transporter.sendMail(mailOptions);
+      console.log('✅ Email de vérification envoyé à:', email);
+      console.log('📬 Message ID:', info.messageId);
+      
+      const previewUrl = nodemailer.getTestMessageUrl(info);
+      if (previewUrl) {
+        console.log('🔗 Voir l\'email (test) ici:', previewUrl);
+        console.log('⚠️  ATTENTION: Ceci est un email de TEST, pas un vrai envoi !');
+      } else if (process.env.SMTP_USER && process.env.SMTP_PASSWORD) {
+        console.log('📧 Email réel envoyé avec succès !');
+        console.log(`📬 L'utilisateur ${email} devrait recevoir l'email dans quelques minutes`);
+        console.log('🔍 Vérifiez votre boîte email (et le dossier spam)');
+      }
+      
+      return {
+        success: true,
+        messageId: info.messageId,
+        previewUrl: previewUrl,
+        isRealEmail: !previewUrl,
+        info: 'Email envoyé avec succès'
+      };
+    } catch (error: any) {
+      console.error('❌ Erreur envoi email de vérification:', error);
+      return { success: false, error: error.message };
+    }
+  }
+
+  async sendPasswordReset(email: string, token: string, name?: string) {
+    if (!this.transporter) {
+      await this.init();
     }
 
-    await this.transporter.sendMail(mailOptions)
+    console.log(`📧 Tentative d'envoi email de reset password à: ${email}`);
+
+    const resetLink = `http://localhost:3000/reset-password?token=${token}`;
+    const userName = name || 'Utilisateur';
+    
+    // Génération du HTML avec React Email
+    const emailHtml = await render(PasswordReset({ 
+      userFirstname: userName, 
+      resetLink 
+    }));
+    
+    const mailOptions = {
+      from: `"${process.env.FROM_NAME || 'SaaS E-Commerce'}" <${process.env.FROM_EMAIL || process.env.SMTP_USER || 'noreply@saas-ecommerce.com'}>`,
+      to: email,
+      subject: 'Réinitialisation de mot de passe - SaaS E-Commerce',
+      html: emailHtml,
+    };
+
+    try {
+      console.log('📤 Envoi de l\'email de reset en cours...');
+      const info = await this.transporter.sendMail(mailOptions);
+      console.log('✅ Email de reset envoyé à:', email);
+      console.log('📬 Message ID:', info.messageId);
+      
+      const previewUrl = nodemailer.getTestMessageUrl(info);
+      if (previewUrl) {
+        console.log('🔗 Voir l\'email (test) ici:', previewUrl);
+      }
+      
+      return {
+        success: true,
+        messageId: info.messageId,
+        previewUrl: previewUrl,
+        info: 'Email de reset envoyé avec succès'
+      };
+    } catch (error: any) {
+      console.error('❌ Erreur envoi email de reset:', error);
+      return { success: false, error: error.message };
+    }
+  }
+
+  async sendWelcomeEmail(email: string, name?: string) {
+    if (!this.transporter) {
+      await this.init();
+    }
+
+    console.log(`📧 Tentative d'envoi email de bienvenue à: ${email}`);
+
+    const dashboardLink = `http://localhost:3000/dashboard`;
+    const userName = name || 'Utilisateur';
+    
+    // Génération du HTML avec React Email
+    const emailHtml = await render(WelcomeEmail({ 
+      userFirstname: userName, 
+      dashboardLink 
+    }));
+    
+    const mailOptions = {
+      from: `"${process.env.FROM_NAME || 'SaaS E-Commerce'}" <${process.env.FROM_EMAIL || process.env.SMTP_USER || 'noreply@saas-ecommerce.com'}>`,
+      to: email,
+      subject: '🎉 Bienvenue sur SaaS E-Commerce ! Votre compte est actif',
+      html: emailHtml,
+    };
+
+    try {
+      console.log('📤 Envoi de l\'email de bienvenue en cours...');
+      const info = await this.transporter.sendMail(mailOptions);
+      console.log('✅ Email de bienvenue envoyé à:', email);
+      console.log('📬 Message ID:', info.messageId);
+      
+      const previewUrl = nodemailer.getTestMessageUrl(info);
+      if (previewUrl) {
+        console.log('🔗 Voir l\'email (test) ici:', previewUrl);
+      }
+      
+      return {
+        success: true,
+        messageId: info.messageId,
+        previewUrl: previewUrl,
+        info: 'Email de bienvenue envoyé avec succès'
+      };
+    } catch (error: any) {
+      console.error('❌ Erreur envoi email de bienvenue:', error);
+      return { success: false, error: error.message };
+    }
+  }
+
+  generateVerificationToken(): string {
+    return crypto.randomBytes(32).toString('hex');
   }
 }
 
-export const emailService = new EmailService()
+export const emailService = new EmailService();

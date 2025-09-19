@@ -18,7 +18,12 @@ const server = fastify({
 
 // Register CORS
 server.register(cors, {
-  origin: process.env.FRONTEND_URL || 'http://localhost:3000',  // Back to 3000
+  origin: [
+    'http://localhost:3000',
+    'http://localhost:3001',
+    'http://localhost:3002',
+    process.env.FRONTEND_URL || 'http://localhost:3002'
+  ],
   credentials: true,
 })
 
@@ -57,7 +62,7 @@ process.on('SIGINT', gracefulShutdown)
 
 const start = async () => {
   try {
-    const port = Number(process.env.PORT) || 3001  // Back to 3001
+    const port = Number(process.env.PORT) || 3002  // Use 3002 to avoid conflict with web app
     const host = process.env.HOST || '0.0.0.0'
     
     await server.listen({ port, host })

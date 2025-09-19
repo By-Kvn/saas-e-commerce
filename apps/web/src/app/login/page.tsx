@@ -1,18 +1,20 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { useAuth } from '../../contexts/AuthContext'
 import { Button, Input } from '@saas/ui'
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3003'
 
-export default function LoginPage() {
+function LoginForm() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [showChangeEmail, setShowChangeEmail] = useState(false)
+  const [showChangePassword, setShowChangePassword] = useState(false)
 
   const { login } = useAuth()
   const router = useRouter()
@@ -20,15 +22,19 @@ export default function LoginPage() {
 
   // Check for OAuth errors in URL parameters
   useEffect(() => {
-    const oauthError = searchParams.get('error')
-    const message = searchParams.get('message')
-    
-    if (oauthError) {
-      if (oauthError === 'oauth_not_configured') {
-        setError(message || 'OAuth n\'est pas configuré. Veuillez configurer les clés OAuth dans le fichier .env.')
-      } else if (oauthError === 'oauth_failed') {
-        setError(message || 'Échec de l\'authentification OAuth. Veuillez réessayer.')
+    try {
+      const oauthError = searchParams?.get('error')
+      const message = searchParams?.get('message')
+      
+      if (oauthError) {
+        if (oauthError === 'oauth_not_configured') {
+          setError(message || 'OAuth n\'est pas configuré. Veuillez configurer les clés OAuth dans le fichier .env.')
+        } else if (oauthError === 'oauth_failed') {
+          setError(message || 'Échec de l\'authentification OAuth. Veuillez réessayer.')
+        }
       }
+    } catch (error) {
+      console.error('Error reading search params:', error)
     }
   }, [searchParams])
 
@@ -39,7 +45,7 @@ export default function LoginPage() {
 
     try {
       await login({ email, password })
-      router.push('/dashboard') // Redirect to dashboard after login
+      router.push('/dashboard')
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Erreur de connexion')
     } finally {
@@ -67,8 +73,7 @@ export default function LoginPage() {
         </div>
         
         <div className="bg-white py-8 px-6 shadow-lg rounded-lg sm:px-8">
-          {/* OAuth Configuration Notice */}
-          {error && error.includes('OAuth not configured') && (
+          {error && error.includes('OAuth') && (
             <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-md">
               <div className="flex">
                 <div className="flex-shrink-0">
@@ -81,45 +86,30 @@ export default function LoginPage() {
                     Configuration OAuth requise
                   </h3>
                   <div className="mt-2 text-sm text-blue-700">
-                    <p>Pour utiliser l'authentification OAuth :</p>
-                    <ol className="list-decimal list-inside mt-1">
-                      <li>Configurez vos clés OAuth dans apps/api/.env</li>
-                      <li>Consultez OAUTH_SETUP.md pour les instructions détaillées</li>
-                      <li>En attendant, vous pouvez utiliser l'inscription/connexion par email ci-dessous</li>
-                    </ol>
+                    <p>{error}</p>
                   </div>
                 </div>
               </div>
             </div>
           )}
 
-          {/* OAuth Buttons */}
           <div className="space-y-3 mb-6">
             <button
               onClick={() => handleOAuthLogin('google')}
-              className="w-full flex items-center justify-center px-4 py-3 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+              className="w-full flex items-center justify-center px-4 py-3 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
             >
-              <svg className="w-5 h-5 mr-3" viewBox="0 0 24 24">
-                <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-                <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-                <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
-                <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
-              </svg>
               Continuer avec Google
             </button>
             
             <button
               onClick={() => handleOAuthLogin('github')}
-              className="w-full flex items-center justify-center px-4 py-3 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+              className="w-full flex items-center justify-center px-4 py-3 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
             >
-              <svg className="w-5 h-5 mr-3" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M10 0C4.477 0 0 4.484 0 10.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0110 4.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.203 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.942.359.31.678.921.678 1.856 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0020 10.017C20 4.484 15.522 0 10 0z" clipRule="evenodd" />
-              </svg>
               Continuer avec GitHub
             </button>
           </div>
 
-          <div className="relative mb-6">
+          <div className="relative">
             <div className="absolute inset-0 flex items-center">
               <div className="w-full border-t border-gray-300" />
             </div>
@@ -128,78 +118,107 @@ export default function LoginPage() {
             </div>
           </div>
 
-          <form className="space-y-6" onSubmit={handleSubmit}>
-            {error && (
-              <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-md text-sm">
+          <form className="space-y-6 mt-6" onSubmit={handleSubmit}>
+            {error && !error.includes('OAuth') && (
+              <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-md">
                 {error}
               </div>
             )}
 
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
-                Adresse email
-              </label>
-              <Input
-                id="email"
-                name="email"
-                type="email"
-                autoComplete="email"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="votre@email.com"
-                className="w-full"
-              />
+              <div className="relative">
+                <Input
+                  id="email"
+                  name="email"
+                  type="email"
+                  required
+                  placeholder="Adresse email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="pr-12"
+                />
+                <button
+                  type="button"
+                  onClick={() => {
+                    setEmail('')
+                    setShowChangeEmail(true)
+                  }}
+                  className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700 p-1"
+                  title="Changer l'email"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                  </svg>
+                </button>
+              </div>
+              {showChangeEmail && (
+                <p className="mt-1 text-xs text-indigo-600">
+                  💡 Saisissez une nouvelle adresse email
+                </p>
+              )}
             </div>
 
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
-                Mot de passe
-              </label>
-              <Input
-                id="password"
-                name="password"
-                type="password"
-                autoComplete="current-password"
-                required
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="••••••••"
-                className="w-full"
-              />
-            </div>
-
-            <div className="flex items-center justify-between">
-              <div className="text-sm">
-                <Link
-                  href="/forgot-password"
-                  className="font-medium text-indigo-600 hover:text-indigo-500"
+              <div className="relative">
+                <Input
+                  id="password"
+                  name="password"
+                  type="password"
+                  required
+                  placeholder="Mot de passe"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="pr-12"
+                />
+                <button
+                  type="button"
+                  onClick={() => {
+                    setPassword('')
+                    setShowChangePassword(true)
+                  }}
+                  className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700 p-1"
+                  title="Changer le mot de passe"
                 >
-                  Mot de passe oublié ?
-                </Link>
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                  </svg>
+                </button>
               </div>
+              {showChangePassword && (
+                <p className="mt-1 text-xs text-indigo-600">
+                  💡 Saisissez un nouveau mot de passe
+                </p>
+              )}
             </div>
 
             <div>
               <Button
                 type="submit"
+                className="w-full"
                 disabled={loading}
-                className="w-full flex justify-center"
-                size="lg"
               >
-                {loading ? (
-                  <div className="flex items-center">
-                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                    Connexion...
-                  </div>
-                ) : (
-                  'Se connecter'
-                )}
+                {loading ? 'Connexion...' : 'Se connecter'}
               </Button>
             </div>
           </form>
         </div>
       </div>
     </div>
+  )
+}
+
+function LoadingFallback() {
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
+      <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-indigo-600"></div>
+    </div>
+  )
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={<LoadingFallback />}>
+      <LoginForm />
+    </Suspense>
   )
 }

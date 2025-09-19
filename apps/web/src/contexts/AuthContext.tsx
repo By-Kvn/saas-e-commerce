@@ -15,7 +15,40 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3003'
+
+// Utilitaires sécurisés pour localStorage
+const safeLocalStorage = {
+  getItem: (key: string): string | null => {
+    if (typeof window !== 'undefined') {
+      try {
+        return localStorage.getItem(key)
+      } catch (error) {
+        console.error('Error reading from localStorage:', error)
+        return null
+      }
+    }
+    return null
+  },
+  setItem: (key: string, value: string): void => {
+    if (typeof window !== 'undefined') {
+      try {
+        localStorage.setItem(key, value)
+      } catch (error) {
+        console.error('Error writing to localStorage:', error)
+      }
+    }
+  },
+  removeItem: (key: string): void => {
+    if (typeof window !== 'undefined') {
+      try {
+        localStorage.removeItem(key)
+      } catch (error) {
+        console.error('Error removing from localStorage:', error)
+      }
+    }
+  }
+}
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<AuthenticatedUser | null>(null)
@@ -24,12 +57,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   // Initialize auth state from localStorage
   useEffect(() => {
-    const savedToken = localStorage.getItem('auth_token')
-    const savedUser = localStorage.getItem('auth_user')
+    // Vérifier que nous sommes côté client
+    if (typeof window !== 'undefined') {
+      const savedToken = safeLocalStorage.getItem('auth_token')
+      const savedUser = safeLocalStorage.getItem('auth_user')
 
-    if (savedToken && savedUser) {
-      setToken(savedToken)
-      setUser(JSON.parse(savedUser))
+      if (savedToken && savedUser) {
+        try {
+          setToken(savedToken)
+          setUser(JSON.parse(savedUser))
+        } catch (error) {
+          console.error('Error parsing saved user:', error)
+          // Nettoyer les données corrompues
+          safeLocalStorage.removeItem('auth_token')
+          safeLocalStorage.removeItem('auth_user')
+        }
+      }
     }
     setLoading(false)
   }, [])
@@ -51,8 +94,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
 
       // Save to localStorage and state
-      localStorage.setItem('auth_token', data.token)
-      localStorage.setItem('auth_user', JSON.stringify(data.user))
+      safeLocalStorage.setItem('auth_token', data.token)
+      safeLocalStorage.setItem('auth_user', JSON.stringify(data.user))
       setToken(data.token)
       setUser(data.user)
 
@@ -79,16 +122,26 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       console.log('Register response status:', response.status)
       console.log('Register response headers:', response.headers)
 
-      const data = await response.json()
-      console.log('Register response data:', data)
+      let data;
+      const responseText = await response.text()
+      console.log('Register response text:', responseText)
+      
+      try {
+        data = JSON.parse(responseText)
+        console.log('Register response data:', data)
+      } catch (parseError) {
+        console.error('Failed to parse JSON response:', parseError)
+        console.log('Raw response:', responseText)
+        throw new Error('Réponse serveur invalide (pas du JSON)')
+      }
 
       if (!response.ok) {
         throw new Error(data.error || 'Erreur d\'inscription')
       }
 
       // Save to localStorage and state
-      localStorage.setItem('auth_token', data.token)
-      localStorage.setItem('auth_user', JSON.stringify(data.user))
+      safeLocalStorage.setItem('auth_token', data.token)
+      safeLocalStorage.setItem('auth_user', JSON.stringify(data.user))
       setToken(data.token)
       setUser(data.user)
 
@@ -100,8 +153,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   const logout = () => {
-    localStorage.removeItem('auth_token')
-    localStorage.removeItem('auth_user')
+    safeLocalStorage.removeItem('auth_token')
+    safeLocalStorage.removeItem('auth_user')
     setToken(null)
     setUser(null)
   }

@@ -7,18 +7,32 @@ import { useAuth } from '../../contexts/AuthContext'
 import { Button } from '@saas/ui'
 
 export default function DashboardPage() {
+  const [mounted, setMounted] = useState(false)
   const { user, logout, isAuthenticated, loading } = useAuth()
   const router = useRouter()
 
   useEffect(() => {
-    if (!loading && !isAuthenticated) {
+    setMounted(true)
+  }, [])
+
+  useEffect(() => {
+    if (mounted && !loading && !isAuthenticated) {
       router.push('/login')
     }
-  }, [isAuthenticated, loading, router])
+  }, [mounted, isAuthenticated, loading, router])
 
   const handleLogout = () => {
     logout()
     router.push('/')
+  }
+
+  // Ne pas rendre avant que le composant soit monté côté client
+  if (!mounted) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
+      </div>
+    )
   }
 
   if (loading) {
