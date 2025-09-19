@@ -3,10 +3,13 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { useAuth } from '../contexts/AuthContext'
+import { useCart } from '../contexts/CartContext'
 
 export function Navigation() {
   const { user, logout } = useAuth()
+  const { getTotalItems } = useCart()
   const [isOpen, setIsOpen] = useState(false)
+  const totalItems = getTotalItems()
 
   const handleLogout = () => {
     logout()
@@ -63,8 +66,8 @@ export function Navigation() {
                       d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-1.5 6h9m-9-6h10"
                     />
                   </svg>
-                  <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                    0
+                  <span className={`absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center transition-all duration-200 ${totalItems > 0 ? 'scale-100 opacity-100' : 'scale-0 opacity-0'}`}>
+                    {totalItems}
                   </span>
                 </Link>
                 <button
@@ -100,8 +103,8 @@ export function Navigation() {
                       d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-1.5 6h9m-9-6h10"
                     />
                   </svg>
-                  <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                    0
+                  <span className={`absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center transition-all duration-200 ${totalItems > 0 ? 'scale-100 opacity-100' : 'scale-0 opacity-0'}`}>
+                    {totalItems}
                   </span>
                 </Link>
                 <Link
@@ -164,6 +167,27 @@ export function Navigation() {
                   >
                     Profil
                   </Link>
+                  <Link
+                    href="/cart"
+                    className="flex items-center text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md text-base font-medium relative"
+                    onClick={() => setIsOpen(false)}
+                  >
+                    <svg
+                      className="w-5 h-5 mr-2"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-1.5 6h9m-9-6h10"
+                      />
+                    </svg>
+                    Panier {totalItems > 0 && `(${totalItems})`}
+                  </Link>
                   <button
                     onClick={handleLogout}
                     className="block w-full text-left text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md text-base font-medium"
@@ -173,6 +197,34 @@ export function Navigation() {
                 </>
               ) : (
                 <>
+                  <Link
+                    href="/products"
+                    className="block text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md text-base font-medium"
+                    onClick={() => setIsOpen(false)}
+                  >
+                    Produits
+                  </Link>
+                  <Link
+                    href="/cart"
+                    className="flex items-center text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md text-base font-medium relative"
+                    onClick={() => setIsOpen(false)}
+                  >
+                    <svg
+                      className="w-5 h-5 mr-2"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-1.5 6h9m-9-6h10"
+                      />
+                    </svg>
+                    Panier {totalItems > 0 && `(${totalItems})`}
+                  </Link>
                   <Link
                     href="/login"
                     className="block text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md text-base font-medium"

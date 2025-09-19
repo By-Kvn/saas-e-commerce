@@ -64,6 +64,78 @@ export async function stripeRoutes(fastify: FastifyInstance) {
     }
   })
 
+  // Create checkout session for cart products
+  fastify.post<{
+    Body: {
+      items: Array<{
+        title: string
+        subtitle: string
+        price: number
+        quantity: number
+      }>
+    }
+  }>('/create-cart-checkout-session', {
+    preHandler: async (request, reply) => {
+      try {
+        await request.jwtVerify()
+      } catch (err) {
+        reply.send(err)
+      }
+    }
+  }, async (request, reply) => {
+    const user = request.user as { userId: string; email: string }
+    const { items } = request.body
+
+    try {
+      // Get or create Stripe customer
+      let customer
+      const userData = await prisma.user.findUnique({
+        where: { id: user.userId },
+      })
+
+      if (userData?.stripeCustomerId) {
+        customer = await stripe.customers.retrieve(userData.stripeCustomerId)
+      } else {
+        customer = await stripe.customers.create({
+          email: user.email,
+        })
+
+        await prisma.user.update({
+          where: { id: user.userId },
+          data: { stripeCustomerId: customer.id },
+        })
+      }
+
+      // Transform cart items to Stripe line items
+      const lineItems = items.map(item => ({
+        price_data: {
+          currency: 'eur',
+          product_data: {
+            name: item.title,
+            description: item.subtitle,
+          },
+          unit_amount: Math.round(item.price * 100), // Convert to cents
+        },
+        quantity: item.quantity,
+      }))
+
+      // Create checkout session for one-time payment
+      const session = await stripe.checkout.sessions.create({
+        customer: customer.id,
+        payment_method_types: ['card'],
+        line_items: lineItems,
+        mode: 'payment', // One-time payment instead of subscription
+        success_url: `${process.env.FRONTEND_URL}/success?session_id={CHECKOUT_SESSION_ID}`,
+        cancel_url: `${process.env.FRONTEND_URL}/cart`,
+      })
+
+      return { sessionId: session.id }
+    } catch (error) {
+      console.error('Stripe cart checkout error:', error)
+      return reply.code(500).send({ error: 'Failed to create cart checkout session' })
+    }
+  })
+
   // Webhook endpoint for Stripe events (simplified for demo)
   fastify.post('/webhook', async (request, reply) => {
     // For production, implement proper webhook signature verification

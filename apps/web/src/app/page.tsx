@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { Button } from '@saas/ui'
 import { ApiResponse } from '@saas/types'
 import { ProductCard } from '../components/ProductCard'
+import { Navigation } from '../components/Navigation'
 
 export default function HomePage() {
   const [message, setMessage] = useState<string>('')
@@ -88,28 +89,7 @@ export default function HomePage() {
 
   return (
     <div className="min-h-screen">
-      {/* Header */}
-      <header className="bg-black">
-        <div className="mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center">
-              <h1 className="text-2xl font-bold text-white">ERZA/Nxst</h1>
-            </div>
-            <nav className="flex space-x-8">
-              <a href="/" className="text-white">
-                Accueil
-              </a>
-              <a href="/products" className="text-white">
-                Produits
-              </a>
-              <Button variant="primary" size="sm">
-                Sign In
-              </Button>
-            </nav>
-          </div>
-        </div>
-      </header>
-
+      <Navigation />
 
       {/* Hero Section */}
       <section className="text-white grid grid-cols-6 m-8 gap-6">
@@ -138,30 +118,30 @@ export default function HomePage() {
 
       {/* Featured Categories */}
       <section className="grid grid-cols-6 gap-6 m-8">
-        <div 
+        <div
           className={`inline-flex justify-center items-center col-span-2 py-5 px-6 text-white text-center no-underline select-none transition-all duration-150 ease-in-out border rounded-[clamp(0.625rem,0.546875rem+0.390625vw,0.9375rem)] cursor-pointer ${
-            selectedCategory === 0 
-              ? 'bg-[#1d1d1d] border-[#1d1d1d]' 
+            selectedCategory === 0
+              ? 'bg-[#1d1d1d] border-[#1d1d1d]'
               : 'bg-transparent border-[#1d1d1d] hover:border-gray-400 hover:bg-[#1d1d1d]/10'
           }`}
           onClick={() => setSelectedCategory(0)}
         >
           <button>Show all</button>
         </div>
-        <div 
+        <div
           className={`inline-flex justify-center items-center col-span-2 py-5 px-6 text-white text-center no-underline select-none transition-all duration-150 ease-in-out border rounded-[clamp(0.625rem,0.546875rem+0.390625vw,0.9375rem)] cursor-pointer ${
-            selectedCategory === 1 
-              ? 'bg-[#1d1d1d] border-[#1d1d1d]' 
+            selectedCategory === 1
+              ? 'bg-[#1d1d1d] border-[#1d1d1d]'
               : 'bg-transparent border-[#1d1d1d] hover:border-gray-400 hover:bg-[#1d1d1d]/10'
           }`}
           onClick={() => setSelectedCategory(1)}
         >
           <button>Casual</button>
         </div>
-        <div 
+        <div
           className={`inline-flex justify-center items-center col-span-2 py-5 px-6 text-white text-center no-underline select-none transition-all duration-150 ease-in-out border rounded-[clamp(0.625rem,0.546875rem+0.390625vw,0.9375rem)] cursor-pointer ${
-            selectedCategory === 2 
-              ? 'bg-[#1d1d1d] border-[#1d1d1d]' 
+            selectedCategory === 2
+              ? 'bg-[#1d1d1d] border-[#1d1d1d]'
               : 'bg-transparent border-[#1d1d1d] hover:border-gray-400 hover:bg-[#1d1d1d]/10'
           }`}
           onClick={() => setSelectedCategory(2)}
@@ -188,12 +168,12 @@ export default function HomePage() {
 
       {/* CTA Section */}
       <section className="bg-gray-900 text-white py-16">
-        
+
       </section>
 
       {/* Footer */}
       <footer className="bg-white border-t">
-       
+
       </footer>
     </div>
   )
