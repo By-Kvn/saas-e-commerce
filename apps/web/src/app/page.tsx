@@ -16,37 +16,43 @@ export default function HomePage() {
       image: '/images/products/tee-v1-full-erza.png',
       alt: 'T-shirt collection',
       title: 'TeeShirt Store',
-      subtitle: 'Collection Premium'
+      subtitle: 'Collection Premium',
+      price: 29.99
     },
     {
       image: '/images/products/era-tee-full-v5.png',
       alt: 'Fashion collection',
       title: 'Mode Urbaine',
-      subtitle: 'Nouvelle Collection'
+      subtitle: 'Nouvelle Collection',
+      price: 34.99
     },
     {
       image: '/images/products/CTTPbis.png',
       alt: 'Street wear',
       title: 'Street Wear',
-      subtitle: 'Style Urbain'
+      subtitle: 'Style Urbain',
+      price: 32.99
     },
     {
       image: '/images/products/erza-v1-tee-black.png',
       alt: 'Street wear',
       title: 'Street Wear',
-      subtitle: 'Style Urbain'
+      subtitle: 'Style Urbain',
+      price: 31.99
     },
     {
       image: '/images/products/WHITE-TEE-ERZA-Colors.png',
       alt: 'Premium collection',
       title: 'Premium',
-      subtitle: 'Édition Limitée'
+      subtitle: 'Édition Limitée',
+      price: 39.99
     },
     {
       image: '/images/products/v5-clrs-erza-tee.png',
       alt: 'Street wear',
       title: 'Street Wear',
-      subtitle: 'Style Urbain'
+      subtitle: 'Style Urbain',
+      price: 36.99
     },
     // {
     //   image: '/images/products/tee-v1-full-erza.png',
@@ -173,6 +179,7 @@ export default function HomePage() {
               alt={product.alt}
               title={product.title}
               subtitle={product.subtitle}
+              price={product.price}
             />
           </div>
         ))}
