@@ -19,47 +19,47 @@ export default function HomePage() {
       subtitle: 'Collection Premium'
     },
     {
-      image: '/images/products/tee-v1-full-erza.png',
+      image: '/images/products/era-tee-full-v5.png',
       alt: 'Fashion collection',
       title: 'Mode Urbaine',
       subtitle: 'Nouvelle Collection'
     },
     {
-      image: '/images/products/tee-v1-full-erza.png',
+      image: '/images/products/CTTPbis.png',
       alt: 'Street wear',
       title: 'Street Wear',
       subtitle: 'Style Urbain'
     },
     {
-      image: '/images/products/tee-v1-full-erza.png',
+      image: '/images/products/erza-v1-tee-black.png',
       alt: 'Street wear',
       title: 'Street Wear',
       subtitle: 'Style Urbain'
     },
     {
-      image: '/images/products/tee-v1-full-erza.png',
+      image: '/images/products/WHITE-TEE-ERZA-Colors.png',
       alt: 'Premium collection',
       title: 'Premium',
       subtitle: 'Édition Limitée'
     },
     {
-      image: '/images/products/tee-v1-full-erza.png',
+      image: '/images/products/v5-clrs-erza-tee.png',
       alt: 'Street wear',
       title: 'Street Wear',
       subtitle: 'Style Urbain'
     },
-    {
-      image: '/images/products/tee-v1-full-erza.png',
-      alt: 'Vintage style',
-      title: 'Vintage',
-      subtitle: 'Rétro Chic'
-    },
-    {
-      image: '/images/products/tee-v1-full-erza.png',
-      alt: 'Summer collection',
-      title: 'Summer',
-      subtitle: 'Collection Été'
-    }
+    // {
+    //   image: '/images/products/tee-v1-full-erza.png',
+    //   alt: 'Vintage style',
+    //   title: 'Vintage',
+    //   subtitle: 'Rétro Chic'
+    // },
+    // {
+    //   image: '/images/products/tee-v1-full-erza.png',
+    //   alt: 'Summer collection',
+    //   title: 'Summer',
+    //   subtitle: 'Collection Été'
+    // }
   ]
 
   const fetchHello = async () => {
