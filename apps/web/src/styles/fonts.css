@@ -7,13 +7,11 @@
   font-display: swap; /* Améliore les performances de chargement */
 }
 
-/* Si tu as d'autres variantes de TestSöhneMono, ajoute-les ici */
-/* Exemple pour bold :
+/* TestSöhneMono ExtraLight */
 @font-face {
   font-family: 'TestSöhneMono';
-  src: url('/fonts/TestSöhneMono-Bold.otf') format('opentype');
-  font-weight: bold;
+  src: url('/fonts/TestSöhneMono-Extraleicht.otf') format('opentype');
+  font-weight: 200; /* ExtraLight weight */
   font-style: normal;
   font-display: swap;
 }
-*/

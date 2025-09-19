@@ -12,6 +12,10 @@ module.exports = {
         'sans': ['TestSöhneMono', 'ui-sans-serif', 'system-ui', 'sans-serif'],
         'sohne': ['TestSöhneMono', 'monospace'],
       },
+      fontWeight: {
+        'extralight': '200',
+        'normal': '400',
+      },
     },
   },
   plugins: [],

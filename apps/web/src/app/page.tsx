@@ -109,8 +109,8 @@ export default function HomePage() {
       <section className="text-white grid grid-cols-6 m-8 gap-6">
       <div className="card aspect-1/1 flex col-span-2 px-4 sm:px-6 lg:px-8 py-10 bg-[#1d1d1d] rounded-clamp">
       <div className='card_content flex just-betwee grow flex-col relative'>
-        <h2 className='text-xl font-bold text-white'>099 Supply</h2>
-        <div className='card_description mt-auto'>
+        <h2 className='text-xl text-white'>099 Supply</h2>
+        <div className='card_description font-light mt-auto'>
           <p>Discover digital tools for creatives. A growing collection of Photoshop mockups and Framer components built for modern design workflows.</p>
         </div>
         <div className='card_media absolute'>
@@ -120,10 +120,10 @@ export default function HomePage() {
 
       <div className="card h-full col-span-4 px-4 sm:px-6 lg:px-8 py-10 bg-[#2c2c2c] rounded-clamp">
       <div className='card_content flex  grow flex-col relative'>
-        <h2 className='text-xl font-bold text-white mb-4'>Titre de la carte</h2>
-        <div className='card_description mt-auto'>
+        <h2 className='text-xl font-bold text-white mb-4'>New Erza's Tee</h2>
+        {/* <div className='card_description mt-auto font-sohne font-extralight'>
           <p>Discover digital tools for creatives. A growing collection of Photoshop mockups and Framer components built for modern design workflows.</p>
-        </div>
+        </div> */}
         <div className='card_media absolute'>
         </div>
       </div>
