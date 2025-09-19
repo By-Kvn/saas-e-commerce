@@ -3,6 +3,8 @@
 import { useState } from 'react'
 import { ProgressiveBlur } from './ProgressiveBlur'
 import { motion } from 'framer-motion'
+import { useCart } from '../contexts/CartContext'
+import { useToast } from '../contexts/ToastContext'
 
 interface ProductCardProps {
   image: string
@@ -15,6 +17,23 @@ interface ProductCardProps {
 
 export function ProductCard({ image, alt, title, subtitle, price, className = '' }: ProductCardProps) {
   const [isHover, setIsHover] = useState(false)
+  const { addToCart } = useCart()
+  const { addToast } = useToast()
+
+  const handleAddToCart = (e: React.MouseEvent) => {
+    e.stopPropagation()
+    addToCart({
+      title,
+      subtitle,
+      price,
+      image
+    })
+    addToast({
+      type: 'success',
+      message: `"${title}" ajouté au panier !`,
+      duration: 3000
+    })
+  }
 
   return (
     <div
@@ -53,12 +72,9 @@ export function ProductCard({ image, alt, title, subtitle, price, className = ''
             <span className='text-base text-zinc-300'>{subtitle}</span>
             <span className='text-lg font-bold text-white mt-2'>{price.toFixed(2)} €</span>
           </div>
-          <button 
+          <button
             className='bg-white/20 hover:bg-white/30 rounded-full p-2 transition-colors duration-200 flex-shrink-0'
-            onClick={(e) => {
-              e.stopPropagation()
-              alert(`Produit "${title}" ajouté au panier !`)
-            }}
+            onClick={handleAddToCart}
             aria-label="Ajouter au panier"
           >
             <svg

@@ -1,6 +1,8 @@
 import type { Metadata } from 'next'
 import Script from 'next/script'
 import { AuthProvider } from '../contexts/AuthContext'
+import { CartProvider } from '../contexts/CartContext'
+import { ToastProvider } from '../contexts/ToastContext'
 import './globals.css'
 import '../styles/fonts.css'
 
@@ -18,7 +20,11 @@ export default function RootLayout({
     <html lang="fr">
       <body className='bg-black'>
         <AuthProvider>
-          {children}
+          <CartProvider>
+            <ToastProvider>
+              {children}
+            </ToastProvider>
+          </CartProvider>
         </AuthProvider>
         <Script
           src="https://js.stripe.com/v3/"
