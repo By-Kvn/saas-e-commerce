@@ -1,0 +1,19 @@
+/* Définition de la font personnalisée TestSöhneMono */
+@font-face {
+  font-family: 'TestSöhneMono';
+  src: url('/fonts/TestSöhneMono-Buch.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap; /* Améliore les performances de chargement */
+}
+
+/* Si tu as d'autres variantes de TestSöhneMono, ajoute-les ici */
+/* Exemple pour bold :
+@font-face {
+  font-family: 'TestSöhneMono';
+  src: url('/fonts/TestSöhneMono-Bold.otf') format('opentype');
+  font-weight: bold;
+  font-style: normal;
+  font-display: swap;
+}
+*/

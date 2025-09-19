@@ -8,6 +8,7 @@ import { ProductCard } from '../components/ProductCard'
 export default function HomePage() {
   const [message, setMessage] = useState<string>('')
   const [loading, setLoading] = useState<boolean>(false)
+  const [selectedCategory, setSelectedCategory] = useState<number>(0) // Premier bouton sélectionné par défaut
 
   // Données des produits
   const products = [
@@ -80,19 +81,19 @@ export default function HomePage() {
   }, [])
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen">
       {/* Header */}
-      <header className="bg-white shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <header className="bg-black">
+        <div className="mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center">
-              <h1 className="text-2xl font-bold text-gray-900">TeeShirt Store</h1>
+              <h1 className="text-2xl font-bold text-white">ERZA/Nxst</h1>
             </div>
             <nav className="flex space-x-8">
-              <a href="/" className="text-gray-900 hover:text-gray-600">
+              <a href="/" className="text-white">
                 Accueil
               </a>
-              <a href="/products" className="text-gray-900 hover:text-gray-600">
+              <a href="/products" className="text-white">
                 Produits
               </a>
               <Button variant="primary" size="sm">
@@ -105,7 +106,7 @@ export default function HomePage() {
 
 
       {/* Hero Section */}
-      <section className="bg-gradient-to-r from-purple-600 to-blue-600 text-white grid grid-cols-6 m-8 gap-6">
+      <section className="text-white grid grid-cols-6 m-8 gap-6">
       <div className="card aspect-1/1 flex col-span-2 px-4 sm:px-6 lg:px-8 py-10 bg-[#1d1d1d] rounded-clamp">
       <div className='card_content flex just-betwee grow flex-col relative'>
         <h2 className='text-xl font-bold text-white'>099 Supply</h2>
@@ -131,27 +132,49 @@ export default function HomePage() {
 
       {/* Featured Categories */}
       <section className="grid grid-cols-6 gap-6 m-8">
-        <div className="inline-flex justify-center items-center col-span-2 py-5 px-6 bg-gray-800 text-white text-center no-underline select-none transition-all duration-150 ease-in-out border border-transparent rounded-[clamp(0.625rem,0.546875rem+0.390625vw,0.9375rem)] cursor-pointer hover:bg-gray-700">
-        <button>Show all</button>
+        <div 
+          className={`inline-flex justify-center items-center col-span-2 py-5 px-6 text-white text-center no-underline select-none transition-all duration-150 ease-in-out border rounded-[clamp(0.625rem,0.546875rem+0.390625vw,0.9375rem)] cursor-pointer ${
+            selectedCategory === 0 
+              ? 'bg-[#1d1d1d] border-[#1d1d1d]' 
+              : 'bg-transparent border-gray-400 hover:border-[#1d1d1d] hover:bg-[#1d1d1d]/10'
+          }`}
+          onClick={() => setSelectedCategory(0)}
+        >
+          <button>Show all</button>
         </div>
-        <div className="inline-flex justify-center items-center col-span-2 py-5 px-6 bg-gray-800 text-white text-center no-underline select-none transition-all duration-150 ease-in-out border border-transparent rounded-[clamp(0.625rem,0.546875rem+0.390625vw,0.9375rem)] cursor-pointer hover:bg-gray-700">
-        <button>Show all</button>
+        <div 
+          className={`inline-flex justify-center items-center col-span-2 py-5 px-6 text-white text-center no-underline select-none transition-all duration-150 ease-in-out border rounded-[clamp(0.625rem,0.546875rem+0.390625vw,0.9375rem)] cursor-pointer ${
+            selectedCategory === 1 
+              ? 'bg-[#1d1d1d] border-[#1d1d1d]' 
+              : 'bg-transparent border-gray-400 hover:border-[#1d1d1d] hover:bg-[#1d1d1d]/10'
+          }`}
+          onClick={() => setSelectedCategory(1)}
+        >
+          <button>Casual</button>
         </div>
-        <div className="inline-flex justify-center items-center col-span-2 py-5 px-6 bg-gray-800 text-white text-center no-underline select-none transition-all duration-150 ease-in-out border border-transparent rounded-[clamp(0.625rem,0.546875rem+0.390625vw,0.9375rem)] cursor-pointer hover:bg-gray-700">
-        <button>Show all</button>
+        <div 
+          className={`inline-flex justify-center items-center col-span-2 py-5 px-6 text-white text-center no-underline select-none transition-all duration-150 ease-in-out border rounded-[clamp(0.625rem,0.546875rem+0.390625vw,0.9375rem)] cursor-pointer ${
+            selectedCategory === 2 
+              ? 'bg-[#1d1d1d] border-[#1d1d1d]' 
+              : 'bg-transparent border-gray-400 hover:border-[#1d1d1d] hover:bg-[#1d1d1d]/10'
+          }`}
+          onClick={() => setSelectedCategory(2)}
+        >
+          <button>Premium</button>
         </div>
         </section>
 
         {/* Product cards */}
-      <section className="grid grid-cols-4 gap-6 m-8">
+      <section className="grid grid-cols-6 gap-6 m-8">
         {products.map((product, index) => (
-          <ProductCard
-            key={index}
-            image={product.image}
-            alt={product.alt}
-            title={product.title}
-            subtitle={product.subtitle}
-          />
+          <div key={index} className="col-span-2">
+            <ProductCard
+              image={product.image}
+              alt={product.alt}
+              title={product.title}
+              subtitle={product.subtitle}
+            />
+          </div>
         ))}
       </section>
 

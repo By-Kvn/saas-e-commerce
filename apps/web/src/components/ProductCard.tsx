@@ -17,7 +17,7 @@ export function ProductCard({ image, alt, title, subtitle, className = '' }: Pro
 
   return (
     <div
-      className={`relative aspect-square h-[300px] overflow-hidden rounded-[4px] cursor-pointer ${className}`}
+      className={`relative aspect-square overflow-hidden rounded-[4px] cursor-pointer rounded-clamp ${className}`}
       onMouseEnter={() => setIsHover(true)}
       onMouseLeave={() => setIsHover(false)}
       role="button"

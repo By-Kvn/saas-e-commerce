@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { AuthProvider } from '../contexts/AuthContext'
 import './globals.css'
+import '../styles/fonts.css'
 
 export const metadata: Metadata = {
   title: 'SaaS Monorepo',
@@ -14,7 +15,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="fr">
-      <body>
+      <body className='bg-black'>
         <AuthProvider>
           {children}
         </AuthProvider>
