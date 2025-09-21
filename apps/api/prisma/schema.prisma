@@ -36,10 +36,13 @@ model User {
 
   // Stripe customer ID
   stripeCustomerId String?
+  subscriptionStatus String @default("none") // none, active, cancelled, past_due
+  subscriptionId String?
 
   // Relations
   oauthAccounts OAuthAccount[]
   subscriptions Subscription[]
+  payments      Payment[]
 
   @@map("users")
 }
@@ -78,4 +81,21 @@ model Subscription {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("subscriptions")
+}
+
+model Payment {
+  id               String   @id @default(cuid())
+  userId           String
+  stripePaymentId  String   @unique
+  amount           Float
+  currency         String
+  status           String   // succeeded, failed, pending
+  description      String?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("payments")
 }
