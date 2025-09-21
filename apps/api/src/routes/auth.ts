@@ -1,20 +1,10 @@
 import { FastifyInstance } from "fastify";
 import bcrypt from "bcryptjs";
-import passport from "passport";
 import { prisma } from "../lib/prisma";
 import { emailService } from "../lib/email";
-import {
-  authMiddleware,
-  requireEmailVerification,
-  AuthenticatedUser,
-} from "../lib/auth";
-import { oauthService } from "../lib/oauth";
+import { authMiddleware, AuthenticatedUser } from "../lib/auth";
 import { twoFactorService } from "../lib/twoFactor";
-import {
-  requireRole,
-  requireAdmin,
-  AuthenticatedUserWithRole,
-} from "../lib/roles";
+import { requireAdmin, AuthenticatedUserWithRole } from "../lib/roles";
 
 export async function authRoutes(fastify: FastifyInstance) {
   // Register endpoint
@@ -467,20 +457,15 @@ export async function authRoutes(fastify: FastifyInstance) {
       const currentUser = (request as any).currentUser as AuthenticatedUser;
 
       if (!currentPassword || !newPassword) {
-        return reply
-          .code(400)
-          .send({
-            error: "Mot de passe actuel et nouveau mot de passe requis",
-          });
+        return reply.code(400).send({
+          error: "Mot de passe actuel et nouveau mot de passe requis",
+        });
       }
 
       if (newPassword.length < 8) {
-        return reply
-          .code(400)
-          .send({
-            error:
-              "Le nouveau mot de passe doit contenir au moins 8 caractères",
-          });
+        return reply.code(400).send({
+          error: "Le nouveau mot de passe doit contenir au moins 8 caractères",
+        });
       }
 
       try {
@@ -534,20 +519,110 @@ export async function authRoutes(fastify: FastifyInstance) {
   // OAuth Routes
   // Google OAuth
   fastify.get("/google", async (request, reply) => {
-    return passport.authenticate("google", { scope: ["profile", "email"] })(
-      request as any,
-      reply as any
-    );
+    const redirectUrl =
+      `https://accounts.google.com/o/oauth2/v2/auth?` +
+      `client_id=${process.env.GOOGLE_CLIENT_ID}&` +
+      `redirect_uri=${encodeURIComponent(process.env.GOOGLE_CALLBACK_URL || "")}&` +
+      `scope=profile email&` +
+      `response_type=code&` +
+      `access_type=offline`;
+
+    return reply.redirect(redirectUrl);
   });
 
   fastify.get("/google/callback", async (request, reply) => {
-    return passport.authenticate("google", {
-      failureRedirect: `${process.env.FRONTEND_URL}/login?error=oauth_failed`,
-    })(request as any, reply as any, async (err: any, user: any) => {
-      if (err || !user) {
+    try {
+      const { code } = request.query as { code?: string };
+
+      if (!code) {
         return reply.redirect(
           `${process.env.FRONTEND_URL}/login?error=oauth_failed`
         );
+      }
+
+      // Exchange code for tokens
+      const tokenResponse = await fetch("https://oauth2.googleapis.com/token", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+        body: new URLSearchParams({
+          client_id: process.env.GOOGLE_CLIENT_ID || "",
+          client_secret: process.env.GOOGLE_CLIENT_SECRET || "",
+          code,
+          grant_type: "authorization_code",
+          redirect_uri: process.env.GOOGLE_CALLBACK_URL || "",
+        }),
+      });
+
+      const tokens = await tokenResponse.json();
+
+      if (!tokens.access_token) {
+        return reply.redirect(
+          `${process.env.FRONTEND_URL}/login?error=oauth_failed`
+        );
+      }
+
+      // Get user info from Google
+      const userResponse = await fetch(
+        "https://www.googleapis.com/oauth2/v2/userinfo",
+        {
+          headers: {
+            Authorization: `Bearer ${tokens.access_token}`,
+          },
+        }
+      );
+
+      const googleUser = await userResponse.json();
+
+      if (!googleUser.email) {
+        return reply.redirect(
+          `${process.env.FRONTEND_URL}/login?error=oauth_failed`
+        );
+      }
+
+      // Check if user exists or create new user
+      let user = await prisma.user.findUnique({
+        where: { email: googleUser.email },
+      });
+
+      if (!user) {
+        user = await prisma.user.create({
+          data: {
+            email: googleUser.email,
+            name: googleUser.name || googleUser.email.split("@")[0],
+            emailVerified: true, // Google emails are verified
+          },
+        });
+
+        // Create OAuth account
+        await prisma.oAuthAccount.create({
+          data: {
+            userId: user.id,
+            provider: "GOOGLE",
+            providerAccountId: googleUser.id,
+          },
+        });
+      } else {
+        // Check if OAuth account exists
+        const existingOAuth = await prisma.oAuthAccount.findUnique({
+          where: {
+            provider_providerAccountId: {
+              provider: "GOOGLE",
+              providerAccountId: googleUser.id,
+            },
+          },
+        });
+
+        if (!existingOAuth) {
+          await prisma.oAuthAccount.create({
+            data: {
+              userId: user.id,
+              provider: "GOOGLE",
+              providerAccountId: googleUser.id,
+            },
+          });
+        }
       }
 
       // Generate JWT token
@@ -557,25 +632,131 @@ export async function authRoutes(fastify: FastifyInstance) {
       return reply.redirect(
         `${process.env.FRONTEND_URL}/oauth-callback?token=${token}&provider=google`
       );
-    });
+    } catch (error) {
+      console.error("Google OAuth error:", error);
+      return reply.redirect(
+        `${process.env.FRONTEND_URL}/login?error=oauth_failed`
+      );
+    }
   });
 
   // GitHub OAuth
   fastify.get("/github", async (request, reply) => {
-    return passport.authenticate("github", { scope: ["user:email"] })(
-      request as any,
-      reply as any
-    );
+    const redirectUrl =
+      `https://github.com/login/oauth/authorize?` +
+      `client_id=${process.env.GITHUB_CLIENT_ID}&` +
+      `redirect_uri=${encodeURIComponent(process.env.GITHUB_CALLBACK_URL || "")}&` +
+      `scope=user:email`;
+
+    return reply.redirect(redirectUrl);
   });
 
   fastify.get("/github/callback", async (request, reply) => {
-    return passport.authenticate("github", {
-      failureRedirect: `${process.env.FRONTEND_URL}/login?error=oauth_failed`,
-    })(request as any, reply as any, async (err: any, user: any) => {
-      if (err || !user) {
+    try {
+      const { code } = request.query as { code?: string };
+
+      if (!code) {
         return reply.redirect(
           `${process.env.FRONTEND_URL}/login?error=oauth_failed`
         );
+      }
+
+      // Exchange code for access token
+      const tokenResponse = await fetch(
+        "https://github.com/login/oauth/access_token",
+        {
+          method: "POST",
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            client_id: process.env.GITHUB_CLIENT_ID,
+            client_secret: process.env.GITHUB_CLIENT_SECRET,
+            code,
+          }),
+        }
+      );
+
+      const tokens = await tokenResponse.json();
+
+      if (!tokens.access_token) {
+        return reply.redirect(
+          `${process.env.FRONTEND_URL}/login?error=oauth_failed`
+        );
+      }
+
+      // Get user info from GitHub
+      const userResponse = await fetch("https://api.github.com/user", {
+        headers: {
+          Authorization: `Bearer ${tokens.access_token}`,
+          "User-Agent": "SaaS-App",
+        },
+      });
+
+      const githubUser = await userResponse.json();
+
+      // Get user emails from GitHub (emails might be private)
+      const emailResponse = await fetch("https://api.github.com/user/emails", {
+        headers: {
+          Authorization: `Bearer ${tokens.access_token}`,
+          "User-Agent": "SaaS-App",
+        },
+      });
+
+      const emails = await emailResponse.json();
+      const primaryEmail =
+        emails.find((email: any) => email.primary)?.email || githubUser.email;
+
+      if (!primaryEmail) {
+        return reply.redirect(
+          `${process.env.FRONTEND_URL}/login?error=oauth_failed`
+        );
+      }
+
+      // Check if user exists or create new user
+      let user = await prisma.user.findUnique({
+        where: { email: primaryEmail },
+      });
+
+      if (!user) {
+        user = await prisma.user.create({
+          data: {
+            email: primaryEmail,
+            name:
+              githubUser.name || githubUser.login || primaryEmail.split("@")[0],
+            emailVerified: true, // GitHub emails are verified
+          },
+        });
+
+        // Create OAuth account
+        await prisma.oAuthAccount.create({
+          data: {
+            userId: user.id,
+            provider: "GITHUB",
+            providerAccountId: githubUser.id.toString(),
+          },
+        });
+      } else {
+        // Check if OAuth account exists
+        const existingOAuth = await prisma.oAuthAccount.findUnique({
+          where: {
+            provider_providerAccountId: {
+              provider: "GITHUB",
+              providerAccountId: githubUser.id.toString(),
+            },
+          },
+        });
+
+        if (!existingOAuth) {
+          await prisma.oAuthAccount.create({
+            data: {
+              userId: user.id,
+              provider: "GITHUB",
+              providerAccountId: githubUser.id.toString(),
+            },
+          });
+        }
       }
 
       // Generate JWT token
@@ -585,7 +766,12 @@ export async function authRoutes(fastify: FastifyInstance) {
       return reply.redirect(
         `${process.env.FRONTEND_URL}/oauth-callback?token=${token}&provider=github`
       );
-    });
+    } catch (error) {
+      console.error("GitHub OAuth error:", error);
+      return reply.redirect(
+        `${process.env.FRONTEND_URL}/login?error=oauth_failed`
+      );
+    }
   });
 
   // 2FA Routes

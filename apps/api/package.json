@@ -19,6 +19,8 @@
   "dependencies": {
     "@fastify/cors": "^8.4.0",
     "@fastify/jwt": "^7.2.4",
+    "@fastify/passport": "^3.0.2",
+    "@fastify/secure-session": "^8.2.0",
     "@prisma/client": "^5.7.1",
     "@react-email/components": "^0.5.3",
     "@react-email/render": "^1.2.3",
