@@ -116,7 +116,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
         {/* Tags */}
         {product.tags && product.tags.length > 0 && (
           <div className="flex flex-wrap gap-1 mb-3">
-            {product.tags.slice(0, 2).map((tag, index) => (
+            {product.tags.slice(0, 2).map((tag: string, index: number) => (
               <Badge key={index} variant="default" size="sm">
                 {tag}
               </Badge>

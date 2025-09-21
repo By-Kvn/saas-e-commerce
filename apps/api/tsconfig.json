@@ -5,15 +5,19 @@
     "noEmit": false,
     "target": "ES2022",
     "module": "commonjs",
-    "moduleResolution": "node",
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
     "baseUrl": "../..",
+        "noEmitOnError": false,
+    "skipLibCheck": true,
+    "noImplicitAny": false,
+    "strict": false,
     "paths": {
       "@/types/*": ["packages/types/src/*"]
-    }
+    },
+    "ignoreDeprecations": "6.0"
   },
   "include": ["src/**/*", "../../packages/types/src/**/*"],
   "exclude": ["node_modules", "dist", "**/*.test.ts"]

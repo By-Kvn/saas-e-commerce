@@ -1,11 +1,12 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { Suspense, useEffect, useState } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import { useCart } from '../../contexts/CartContext'
 import { Navigation } from '../../components/Navigation'
 
-export default function SuccessPage() {
+// Composant qui utilise useSearchParams
+function SuccessContent() {
   const searchParams = useSearchParams()
   const router = useRouter()
   const { clearCart } = useCart()
@@ -107,5 +108,21 @@ export default function SuccessPage() {
         </div>
       </div>
     </div>
+  )
+}
+
+// Composant principal avec Suspense boundary
+export default function SuccessPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Chargement...</p>
+        </div>
+      </div>
+    }>
+      <SuccessContent />
+    </Suspense>
   )
 }
