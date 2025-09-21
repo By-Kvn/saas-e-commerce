@@ -9,7 +9,9 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
 export async function stripeRoutes(fastify: FastifyInstance) {
   // Create checkout session
   fastify.post<{
-    Body: { priceId: string }
+    Body: {
+      productId: string
+    }
   }>('/create-checkout-session', {
     preHandler: async (request, reply) => {
       try {
@@ -20,7 +22,7 @@ export async function stripeRoutes(fastify: FastifyInstance) {
     }
   }, async (request, reply) => {
     const user = request.user as { userId: string; email: string }
-    const { priceId } = request.body
+    const { productId } = request.body
 
     try {
       // Get or create Stripe customer
@@ -30,7 +32,20 @@ export async function stripeRoutes(fastify: FastifyInstance) {
       })
 
       if (userData?.stripeCustomerId) {
-        customer = await stripe.customers.retrieve(userData.stripeCustomerId)
+        try {
+          customer = await stripe.customers.retrieve(userData.stripeCustomerId)
+        } catch (error) {
+          // If customer doesn't exist in Stripe, create a new one
+          console.log('Customer not found in Stripe, creating new one')
+          customer = await stripe.customers.create({
+            email: user.email,
+          })
+
+          await prisma.user.update({
+            where: { id: user.userId },
+            data: { stripeCustomerId: customer.id },
+          })
+        }
       } else {
         customer = await stripe.customers.create({
           email: user.email,
@@ -42,19 +57,31 @@ export async function stripeRoutes(fastify: FastifyInstance) {
         })
       }
 
+      // Get the first price for this product
+      const prices = await stripe.prices.list({
+        product: productId,
+        active: true,
+      })
+
+      if (prices.data.length === 0) {
+        throw new Error(`No active prices found for product ${productId}`)
+      }
+
+      const price = prices.data[0]
+
       // Create checkout session
       const session = await stripe.checkout.sessions.create({
         customer: customer.id,
         payment_method_types: ['card'],
         line_items: [
           {
-            price: priceId,
+            price: price.id,
             quantity: 1,
           },
         ],
         mode: 'subscription',
         success_url: `${process.env.FRONTEND_URL}/success?session_id={CHECKOUT_SESSION_ID}`,
-        cancel_url: `${process.env.FRONTEND_URL}/cancel`,
+        cancel_url: `${process.env.FRONTEND_URL}/payment`,
       })
 
       return { sessionId: session.id }
@@ -94,7 +121,20 @@ export async function stripeRoutes(fastify: FastifyInstance) {
       })
 
       if (userData?.stripeCustomerId) {
-        customer = await stripe.customers.retrieve(userData.stripeCustomerId)
+        try {
+          customer = await stripe.customers.retrieve(userData.stripeCustomerId)
+        } catch (error) {
+          // If customer doesn't exist in Stripe, create a new one
+          console.log('Customer not found in Stripe, creating new one')
+          customer = await stripe.customers.create({
+            email: user.email,
+          })
+
+          await prisma.user.update({
+            where: { id: user.userId },
+            data: { stripeCustomerId: customer.id },
+          })
+        }
       } else {
         customer = await stripe.customers.create({
           email: user.email,

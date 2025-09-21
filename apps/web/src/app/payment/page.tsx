@@ -10,7 +10,7 @@ const plans = [
     id: 'starter',
     name: 'Starter',
     price: '€1.99',
-    priceId: 'price_1XXXXXXXXXXXXXXXXX', // Remplacez par votre vrai Price ID Stripe
+    productId: 'prod_T5G7COaEXVVvW7', // Product ID Stripe pour starter
     features: [
       'Accès anticipé',
       'Support email',
@@ -21,7 +21,7 @@ const plans = [
     id: 'standard',
     name: 'Standard',
     price: '€4.99',
-    priceId: 'price_2XXXXXXXXXXXXXXXXX', // Remplacez par votre vrai Price ID Stripe
+    productId: 'prod_T5G8rWE1zf5BvN', // Product ID Stripe pour standard
     features: [
       'Accès anticipé',
       'Support prioritaire',
@@ -34,7 +34,7 @@ const plans = [
     id: 'premium',
     name: 'Premium',
     price: '€9.99',
-    priceId: 'price_3XXXXXXXXXXXXXXXXX', // Remplacez par votre vrai Price ID Stripe
+    productId: 'prod_T5G8mo3lbvofMF', // Product ID Stripe pour premium
     features: [
       'Tout de standard',
       'Support téléphonique',
@@ -49,12 +49,12 @@ export default function PaymentPage() {
   const [error, setError] = useState<string | null>(null)
   const router = useRouter()
 
-  const handleSubscribe = async (priceId: string, planId: string) => {
-    setLoading(planId)
+  const handleSubscribe = async (plan: any) => {
+    setLoading(plan.id)
     setError(null)
 
     try {
-      const token = localStorage.getItem('token')
+      const token = localStorage.getItem('auth_token')
       if (!token) {
         router.push('/login')
         return
@@ -66,7 +66,9 @@ export default function PaymentPage() {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
         },
-        body: JSON.stringify({ priceId })
+        body: JSON.stringify({
+          productId: plan.productId
+        })
       })
 
       const data = await response.json()
@@ -143,7 +145,7 @@ export default function PaymentPage() {
                 </ul>
 
                 <button
-                  onClick={() => handleSubscribe(plan.priceId, plan.id)}
+                  onClick={() => handleSubscribe(plan)}
                   disabled={loading === plan.id}
                   className={`mt-8 w-full py-3 px-4 cursor-pointer rounded-md font-medium text-white transition-colors
                     ${plan.popular
