@@ -4,7 +4,7 @@ import { prisma } from "../lib/prisma";
 import { emailService } from "../lib/email";
 import { authMiddleware, AuthenticatedUser } from "../lib/auth";
 import { twoFactorService } from "../lib/twoFactor";
-import { requireAdmin, AuthenticatedUserWithRole } from "../lib/roles";
+import { requireAdmin } from "../lib/roles";
 
 export async function authRoutes(fastify: FastifyInstance) {
   // Register endpoint
@@ -99,7 +99,7 @@ export async function authRoutes(fastify: FastifyInstance) {
         where: { email },
       });
 
-      if (!user || !user.password) {
+      if (!user?.password) {
         return reply
           .code(401)
           .send({ error: "Email ou mot de passe incorrect" });
@@ -474,7 +474,7 @@ export async function authRoutes(fastify: FastifyInstance) {
           where: { id: currentUser.id },
         });
 
-        if (!user || !user.password) {
+        if (!user?.password) {
           return reply.code(404).send({ error: "Utilisateur non trouvé" });
         }
 
@@ -872,7 +872,7 @@ export async function authRoutes(fastify: FastifyInstance) {
           where: { id: user.id },
           data: {
             twoFactorEnabled: true,
-            backupCodes: { set: backupCodes },
+            backupCodes: JSON.stringify(backupCodes),
           },
         });
 
@@ -940,7 +940,7 @@ export async function authRoutes(fastify: FastifyInstance) {
           data: {
             twoFactorEnabled: false,
             twoFactorSecret: null,
-            backupCodes: { set: [] },
+            backupCodes: JSON.stringify([]),
           },
         });
 
@@ -980,7 +980,7 @@ export async function authRoutes(fastify: FastifyInstance) {
         where: { email },
       });
 
-      if (!user || !user.password) {
+      if (!user?.password) {
         return reply.code(401).send({ error: "Identifiants incorrects" });
       }
 
@@ -1003,19 +1003,17 @@ export async function authRoutes(fastify: FastifyInstance) {
       if (token && user.twoFactorSecret) {
         is2FAValid = twoFactorService.verifyToken(user.twoFactorSecret, token);
       } else if (backupCode) {
-        is2FAValid = twoFactorService.verifyBackupCode(
-          user.backupCodes,
-          backupCode
-        );
+        const codes = JSON.parse(user.backupCodes || "[]");
+        is2FAValid = twoFactorService.verifyBackupCode(codes, backupCode);
         if (is2FAValid) {
           // Remove used backup code
           const updatedBackupCodesArray = twoFactorService.removeBackupCode(
-            user.backupCodes,
+            codes,
             backupCode
           );
           await prisma.user.update({
             where: { id: user.id },
-            data: { backupCodes: { set: updatedBackupCodesArray } },
+            data: { backupCodes: JSON.stringify(updatedBackupCodesArray) },
           });
         }
       }
@@ -1028,8 +1026,9 @@ export async function authRoutes(fastify: FastifyInstance) {
       const jwtToken = fastify.jwt.sign({ userId: user.id, email: user.email });
 
       // Check if backup codes need regeneration
-      const shouldRegenerate =
-        twoFactorService.shouldRegenerateBackupCodes(updatedBackupCodes);
+      const shouldRegenerate = twoFactorService.shouldRegenerateBackupCodes(
+        JSON.parse(updatedBackupCodes || "[]")
+      );
 
       return {
         user: {
@@ -1072,7 +1071,7 @@ export async function authRoutes(fastify: FastifyInstance) {
             _count: {
               select: {
                 subscriptions: true,
-                oauthProviders: true,
+                oauthAccounts: true,
               },
             },
           },

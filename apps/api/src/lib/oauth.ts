@@ -80,7 +80,7 @@ export class OAuthService {
             const user = await prisma.user.findUnique({
               where: { id: payload.userId },
               include: {
-                oauthProviders: true,
+                oauthAccounts: true,
               },
             })
             
@@ -106,11 +106,11 @@ export class OAuthService {
     refreshToken?: string
   }) {
     // Check if OAuth provider already exists
-    const existingOAuth = await prisma.oAuthProvider.findUnique({
+    const existingOAuth = await prisma.oAuthAccount.findUnique({
       where: {
-        provider_providerId: {
+        provider_providerAccountId: {
           provider: oauthData.provider,
-          providerId: oauthData.providerId,
+          providerAccountId: oauthData.providerId,
         },
       },
       include: { user: true },
@@ -118,14 +118,12 @@ export class OAuthService {
 
     if (existingOAuth) {
       // Update tokens
-      await prisma.oAuthProvider.update({
+      await prisma.oAuthAccount.update({
         where: { id: existingOAuth.id },
         data: {
           accessToken: oauthData.accessToken,
           refreshToken: oauthData.refreshToken,
-          email: oauthData.email,
-          name: oauthData.name,
-          avatar: oauthData.avatar,
+          // Add other fields if present in schema
         },
       })
       return existingOAuth.user
@@ -141,7 +139,7 @@ export class OAuthService {
 
     // Create new user if doesn't exist
     if (!user) {
-      user = await prisma.user.create({
+      user ??= await prisma.user.create({
         data: {
           email: oauthData.email || `${oauthData.provider}_${oauthData.providerId}@oauth.local`,
           name: oauthData.name,
@@ -153,13 +151,10 @@ export class OAuthService {
     }
 
     // Create OAuth provider record
-    await prisma.oAuthProvider.create({
+    await prisma.oAuthAccount.create({
       data: {
         provider: oauthData.provider,
-        providerId: oauthData.providerId,
-        email: oauthData.email,
-        name: oauthData.name,
-        avatar: oauthData.avatar,
+        providerAccountId: oauthData.providerId,
         accessToken: oauthData.accessToken,
         refreshToken: oauthData.refreshToken,
         userId: user.id,
