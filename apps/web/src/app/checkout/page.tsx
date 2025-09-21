@@ -11,22 +11,22 @@ export default function CheckoutPage() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const { items, getTotalPrice, clearCart } = useCart()
-  const { user } = useAuth()
+  const { user, token, isAuthenticated, loading: authLoading } = useAuth()
   const router = useRouter()
 
   // Redirect to login if not authenticated
   useEffect(() => {
-    if (!user) {
+    if (!authLoading && !isAuthenticated) {
       router.push('/login?redirect=/checkout')
     }
-  }, [user, router])
+  }, [isAuthenticated, authLoading, router])
 
   // Redirect to cart if no items
   useEffect(() => {
-    if (items.length === 0) {
+    if (!authLoading && items.length === 0) {
       router.push('/cart')
     }
-  }, [items, router])
+  }, [items, authLoading, router])
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('fr-FR', {
@@ -40,8 +40,7 @@ export default function CheckoutPage() {
     setError(null)
 
     try {
-      const token = localStorage.getItem('token')
-      if (!token) {
+      if (!isAuthenticated || !token) {
         router.push('/login?redirect=/checkout')
         return
       }
@@ -90,7 +89,7 @@ export default function CheckoutPage() {
   const shipping = subtotal >= 50 ? 0 : 5.99
   const total = subtotal + shipping
 
-  if (!user || items.length === 0) {
+  if (authLoading || !isAuthenticated || items.length === 0) {
     return (
       <div className="min-h-screen bg-gray-50">
         <Navigation />
